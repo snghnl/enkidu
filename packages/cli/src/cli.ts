@@ -8,6 +8,7 @@ import { noteCommand } from "./commands/note.js";
 import { tagCommand } from "./commands/tag.js";
 import { categoryCommand } from "./commands/category.js";
 import { syncCommand } from "./commands/sync.js";
+import { searchCommand } from "./commands/search.js";
 
 const program = new Command();
 
@@ -26,9 +27,9 @@ program.addCommand(noteCommand);
 program.addCommand(tagCommand);
 program.addCommand(categoryCommand);
 program.addCommand(syncCommand);
+program.addCommand(searchCommand);
 
 // TODO: Add commands as we implement them
-// program.addCommand(searchCommand);
 // program.addCommand(linkCommand);
 // program.addCommand(templateCommand);
 

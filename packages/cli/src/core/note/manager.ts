@@ -109,10 +109,11 @@ export class NoteManager {
         : join(this.pkmRoot, slugOrPath);
     } else {
       // Search for note by slug
-      notePath = await this.findNoteBySlug(slugOrPath);
-      if (!notePath) {
+      const foundPath = await this.findNoteBySlug(slugOrPath);
+      if (!foundPath) {
         throw new Error(`Note not found: ${slugOrPath}`);
       }
+      notePath = foundPath;
     }
 
     if (!fileExists(notePath)) {
