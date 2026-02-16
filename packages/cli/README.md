@@ -4,7 +4,7 @@ A powerful command-line interface for managing your personal knowledge, daily no
 
 ## Features
 
-✅ **Implemented (v1.0.0)**
+✅ **Implemented (v0.1.0)**
 - 📝 **Daily Notes** - Create and manage daily journal entries
 - 📚 **Note Management** - Full CRUD operations for notes with categories and tags
 - 🏷️ **Tags & Categories** - Organize and filter your knowledge
@@ -293,7 +293,7 @@ Default configuration (`~/.enkidu/config.json` or `~/enkidu/.enkidu/config.json`
 
 ```json
 {
-  "version": "1.0.0",
+  "version": "0.1.0",
   "rootDir": "~/enkidu",
   "editor": "vim",
   "daily": {
@@ -354,7 +354,7 @@ pnpm typecheck
 
 ## Roadmap
 
-### v1.0.0 ✅ **COMPLETED**
+### v0.1.0 ✅ **COMPLETED**
 - [x] CLI infrastructure
 - [x] Configuration system
 - [x] Note CRUD operations
@@ -366,7 +366,7 @@ pnpm typecheck
 - [x] Template management CLI
 - [x] Search indexing and caching
 
-### v1.0.1 (Next - Quality & Polish)
+### v0.2.0 (Next - Quality & Polish)
 - [ ] Comprehensive test suite (85%+ coverage)
 - [ ] Error handling improvements
 - [ ] Progress indicators and spinners
@@ -375,7 +375,7 @@ pnpm typecheck
 - [ ] Performance optimization (lazy loading, parallel operations)
 - [ ] Complete documentation
 
-### v1.1.0 (Publishing & Sync)
+### v0.3.0 (Publishing & Sync)
 - [ ] Docusaurus sync with link conversion
 - [ ] Publishing workflow
 - [ ] Link graph visualization
@@ -383,7 +383,7 @@ pnpm typecheck
 - [ ] Custom template support
 - [ ] Import/export functionality
 
-### v2.0.0 (Future)
+### v1.0.0 (Future)
 - [ ] Git integration
 - [ ] Web UI
 - [ ] Mobile companion app
@@ -392,7 +392,7 @@ pnpm typecheck
 
 ## Contributing
 
-This is currently a personal project. Contributions welcome after v1.0.0 release.
+This is currently a personal project. Contributions welcome after v0.1.0 release.
 
 ## License
 

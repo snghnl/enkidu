@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Template management commands
 - Comprehensive test suite
 
-## [1.0.0-alpha] - 2026-02-13
+## [0.1.0] - 2026-02-13
 
 ### Added
 - Initial release of Enkidu CLI
@@ -62,5 +62,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - tsup for fast building
 - ESM-only (Node 20+)
 
-[Unreleased]: https://github.com/user/pkm-cli/compare/v1.0.0-alpha...HEAD
-[1.0.0-alpha]: https://github.com/user/pkm-cli/releases/tag/v1.0.0-alpha
+[Unreleased]: https://github.com/user/pkm-cli/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/user/pkm-cli/releases/tag/v0.1.0

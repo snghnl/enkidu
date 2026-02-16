@@ -19,7 +19,7 @@ program
   .description(
     "Enkidu - Personal Knowledge Management CLI - Manage notes, daily journals, and publish to Docusaurus",
   )
-  .version("1.0.0");
+  .version("0.1.0");
 
 // Add implemented commands
 program.addCommand(initCommand);

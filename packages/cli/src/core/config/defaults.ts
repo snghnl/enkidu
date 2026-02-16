@@ -6,7 +6,7 @@ export function getDefaultConfig(rootDir?: string): PkmConfig {
   const pkmRoot = rootDir || join(homedir(), "enkidu");
 
   return {
-    version: "1.0.0",
+    version: "0.1.0",
     rootDir: pkmRoot,
     editor: process.env.EDITOR || "vim",
     daily: {

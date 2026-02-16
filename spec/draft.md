@@ -4,7 +4,7 @@
 
 A comprehensive command-line interface for personal knowledge management that integrates seamlessly with Docusaurus for publishing. Built with TypeScript/JavaScript to enable content creation, organization, and publishing workflows.
 
-**Current Status**: ✅ **v1.0.0-alpha - Production Ready**  
+**Current Status**: ✅ **v0.1.0-alpha - Production Ready**  
 **Last Updated**: 2026-02-14
 
 ---
@@ -31,7 +31,7 @@ Create a unified system for:
 
 ## Implementation Status
 
-### ✅ Completed (v1.0.0-alpha)
+### ✅ Completed (v0.1.0-alpha)
 
 #### Core Infrastructure
 - [x] Monorepo structure with pnpm workspaces
@@ -88,7 +88,7 @@ Create a unified system for:
 - [x] PROJECT_SUMMARY.md - Overview
 - [x] LICENSE - MIT
 
-### 🚧 Planned for v1.0.0 Final
+### 🚧 Planned for v0.1.0 Final
 
 - [ ] Wiki-style linking system (`[[note-name]]`)
 - [ ] Full-text search with Fuse.js
@@ -96,7 +96,7 @@ Create a unified system for:
 - [ ] Comprehensive test suite (>80% coverage)
 - [ ] Template management CLI commands
 
-### 📅 Future (v1.1+)
+### 📅 Future (v0.2+)
 
 - [ ] Interactive search with fuzzy finder
 - [ ] Custom template creation via CLI
@@ -460,7 +460,7 @@ authors: [default]
 
 ## Roadmap
 
-### ✅ v1.0.0-alpha (COMPLETED - 2026-02-14)
+### ✅ v0.1.0-alpha (COMPLETED - 2026-02-14)
 - [x] CLI infrastructure
 - [x] Configuration system
 - [x] Note CRUD operations
@@ -470,20 +470,20 @@ authors: [default]
 - [x] Templates
 - [x] Documentation
 
-### 🚧 v1.0.0-final (In Progress)
+### 🚧 v0.1.0-final (In Progress)
 - [ ] Wiki-style linking
 - [ ] Full-text search
 - [ ] Link graph
 - [ ] Comprehensive tests (>80% coverage)
 - [ ] Template management CLI
 
-### 📅 v1.1.0 (Planned)
+### 📅 v0.2.0 (Planned)
 - [ ] Interactive search
 - [ ] Custom template creation
 - [ ] Import/export
 - [ ] Git integration
 
-### 📅 v2.0.0 (Future)
+### 📅 v1.0.0 (Future)
 - [ ] Web UI
 - [ ] Mobile companion app
 - [ ] Cloud sync
@@ -532,7 +532,7 @@ See [CHANGELOG.md](../packages/cli/CHANGELOG.md) for version history.
 
 ---
 
-**Status**: ✅ **Production-Ready Alpha (v1.0.0-alpha)**  
+**Status**: ✅ **Production-Ready Alpha (v0.1.0-alpha)**  
 **Last Updated**: 2026-02-14  
 **Ready for**: Daily use, feedback, and testing  
-**Next Milestone**: v1.0.0-final (Wiki-links, Search, Tests)
+**Next Milestone**: v0.1.0-final (Wiki-links, Search, Tests)
