@@ -10,6 +10,7 @@ import { categoryCommand } from "./commands/category.js";
 import { syncCommand } from "./commands/sync.js";
 import { searchCommand } from "./commands/search.js";
 import { linkCommand } from "./commands/link.js";
+import { templateCommand } from "./commands/template.js";
 
 const program = new Command();
 
@@ -29,9 +30,7 @@ program.addCommand(tagCommand);
 program.addCommand(categoryCommand);
 program.addCommand(syncCommand);
 program.addCommand(searchCommand);
-
 program.addCommand(linkCommand);
-
-// program.addCommand(templateCommand);
+program.addCommand(templateCommand);
 
 program.parse();

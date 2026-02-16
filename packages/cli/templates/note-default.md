@@ -1,3 +1,4 @@
+<!-- Basic note template -->
 ---
 title: {{title}}
 created: {{date}}

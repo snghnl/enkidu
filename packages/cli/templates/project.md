@@ -1,3 +1,4 @@
+<!-- Project note with Goals, Tasks, Resources -->
 ---
 title: {{title}}
 created: {{date}}

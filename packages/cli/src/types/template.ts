@@ -3,6 +3,7 @@ export interface Template {
   description: string;
   content: string;
   isBuiltIn: boolean;
+  path: string;
 }
 
 export interface TemplateVariables {

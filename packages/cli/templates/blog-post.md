@@ -1,3 +1,4 @@
+<!-- Blog post with Introduction, Content, Conclusion -->
 ---
 title: {{title}}
 created: {{date}}
