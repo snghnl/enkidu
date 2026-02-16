@@ -11,12 +11,12 @@ A powerful command-line interface for managing your personal knowledge, daily no
 - ⚙️ **Configuration** - Flexible configuration system
 - 📁 **File-based Storage** - All notes stored as markdown files
 - 🎨 **Templates** - Built-in templates for different note types
+- 🔗 **Wiki-style Linking** - Link notes together with `[[note-name]]` syntax
+- 📊 **Link Analysis** - Backlinks, broken link detection, and statistics
 
 🚧 **Coming Soon**
-- 🔗 **Wiki-style Linking** - Link notes together with `[[note-name]]` syntax
 - 🔍 **Full-text Search** - Fast fuzzy search across all notes
-- 🔄 **Docusaurus Sync** - One-command publishing to your blog
-- 📊 **Link Graph** - Visualize connections between notes
+- 🔄 **Docusaurus Sync** - One-command publishing to your blog (with link conversion)
 
 ## Installation
 
@@ -126,7 +126,40 @@ enkidu category list
 enkidu category move my-note projects
 ```
 
-### 6. Configuration
+### 6. Wiki-style Linking
+
+Link notes together using wiki-link syntax:
+
+```markdown
+# In your note content
+Check out my [[project-ideas]] for inspiration.
+Also see [[daily-routine|my daily routine]].
+```
+
+```bash
+# Show backlinks to a note
+enkidu link backlinks project-ideas
+
+# Show outgoing links from a note
+enkidu link show project-ideas
+
+# Validate all links and find broken ones
+enkidu link validate
+
+# Get suggestions for broken links
+enkidu link validate --fix
+
+# Show link statistics
+enkidu link stats
+```
+
+**Link Syntax:**
+- `[[note-slug]]` - Basic link (will resolve to note)
+- `[[note-slug|Display Text]]` - Link with custom display text
+- `[[2026-02-16]]` - Link to daily note
+- Case-insensitive matching with fuzzy suggestions
+
+### 7. Configuration
 
 ```bash
 # View all config
@@ -274,9 +307,10 @@ pnpm typecheck
 - [x] Note CRUD operations
 - [x] Daily notes
 - [x] Tags and categories
-- [ ] Wiki-style linking
+- [x] Wiki-style linking
+- [x] Link validation and backlinks
 - [ ] Search functionality
-- [ ] Docusaurus sync
+- [ ] Docusaurus sync with link conversion
 - [ ] Documentation
 - [ ] Tests (>80% coverage)
 
