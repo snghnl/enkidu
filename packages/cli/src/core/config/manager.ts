@@ -1,0 +1,212 @@
+import { cosmiconfig } from "cosmiconfig";
+import { join } from "path";
+import { existsSync, mkdirSync, writeFileSync, readFileSync } from "fs";
+import { PkmConfig, pkmConfigSchema } from "./schema.js";
+import { getDefaultConfig } from "./defaults.js";
+
+const CONFIG_NAME = "enkidu";
+
+export class ConfigManager {
+  private config: PkmConfig | null = null;
+  private configPath: string | null = null;
+
+  /**
+   * Load configuration from file or use defaults
+   */
+  async loadConfig(searchFrom?: string): Promise<PkmConfig> {
+    const explorer = cosmiconfig(CONFIG_NAME, {
+      searchPlaces: [
+        ".enkidu/config.json",
+        ".enkidu/config.yaml",
+        ".enkidu/config.yml",
+        ".enkidu/config.js",
+        `${CONFIG_NAME}.config.json`,
+        `${CONFIG_NAME}.config.js`,
+      ],
+    });
+
+    try {
+      const result = await explorer.search(searchFrom);
+
+      if (result && result.config) {
+        // Validate and merge with defaults
+        const validated = pkmConfigSchema.parse({
+          ...getDefaultConfig(),
+          ...result.config,
+        });
+
+        this.config = validated;
+        this.configPath = result.filepath;
+        return validated;
+      }
+    } catch (error) {
+      // If config file exists but is invalid, throw error
+      if (error instanceof Error) {
+        throw new Error(`Invalid configuration: ${error.message}`);
+      }
+    }
+
+    // No config found, return defaults
+    const defaultConfig = getDefaultConfig();
+    this.config = defaultConfig;
+    return defaultConfig;
+  }
+
+  /**
+   * Get current configuration
+   */
+  getConfig(): PkmConfig {
+    if (!this.config) {
+      throw new Error("Configuration not loaded. Call loadConfig() first.");
+    }
+    return this.config;
+  }
+
+  /**
+   * Get configuration value by key path (e.g., 'daily.path')
+   */
+  getConfigValue(keyPath: string): any {
+    const config = this.getConfig();
+    const keys = keyPath.split(".");
+    let value: any = config;
+
+    for (const key of keys) {
+      if (value && typeof value === "object" && key in value) {
+        value = value[key];
+      } else {
+        return undefined;
+      }
+    }
+
+    return value;
+  }
+
+  /**
+   * Set configuration value by key path
+   */
+  async setConfigValue(keyPath: string, value: any): Promise<void> {
+    const config = this.getConfig();
+    const keys = keyPath.split(".");
+    let current: any = config;
+
+    // Navigate to the parent object
+    for (let i = 0; i < keys.length - 1; i++) {
+      const key = keys[i];
+      if (!(key in current)) {
+        current[key] = {};
+      }
+      current = current[key];
+    }
+
+    // Set the value
+    const lastKey = keys[keys.length - 1];
+    current[lastKey] = value;
+
+    // Validate the updated config
+    const validated = pkmConfigSchema.parse(config);
+    this.config = validated;
+
+    // Save to file
+    await this.saveConfig();
+  }
+
+  /**
+   * Save configuration to file
+   */
+  async saveConfig(customPath?: string): Promise<void> {
+    const config = this.getConfig();
+    const targetPath =
+      customPath ||
+      this.configPath ||
+      join(config.rootDir, ".enkidu", "config.json");
+
+    // Ensure directory exists
+    const dir = join(targetPath, "..");
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
+    }
+
+    // Write config as pretty JSON
+    writeFileSync(targetPath, JSON.stringify(config, null, 2), "utf-8");
+    this.configPath = targetPath;
+  }
+
+  /**
+   * Initialize a new Enkidu configuration
+   */
+  async initConfig(
+    rootDir: string,
+    options: Partial<PkmConfig> = {},
+  ): Promise<PkmConfig> {
+    const defaultConfig = getDefaultConfig(rootDir);
+    const newConfig = pkmConfigSchema.parse({
+      ...defaultConfig,
+      ...options,
+      rootDir, // Ensure rootDir is set correctly
+    });
+
+    this.config = newConfig;
+
+    // Create directory structure
+    const dirs = [
+      rootDir,
+      join(rootDir, ".enkidu"),
+      join(rootDir, ".enkidu", "templates"),
+      join(rootDir, ".enkidu", "cache"),
+      join(rootDir, "daily"),
+      join(rootDir, "notes", "projects"),
+      join(rootDir, "notes", "reference"),
+      join(rootDir, "notes", "ideas"),
+      join(rootDir, "notes", "misc"),
+      join(rootDir, "blog"),
+      join(rootDir, "attachments"),
+    ];
+
+    for (const dir of dirs) {
+      if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
+      }
+    }
+
+    // Save config
+    await this.saveConfig(join(rootDir, ".enkidu", "config.json"));
+
+    return newConfig;
+  }
+
+  /**
+   * Check if Enkidu is initialized in a directory
+   */
+  static isInitialized(dir: string): boolean {
+    return existsSync(join(dir, ".enkidu", "config.json"));
+  }
+
+  /**
+   * Find Enkidu root directory by searching upwards
+   */
+  static findPkmRoot(startDir: string = process.cwd()): string | null {
+    let currentDir = startDir;
+    const root = "/";
+
+    while (currentDir !== root) {
+      if (this.isInitialized(currentDir)) {
+        return currentDir;
+      }
+      const parentDir = join(currentDir, "..");
+      if (parentDir === currentDir) break;
+      currentDir = parentDir;
+    }
+
+    return null;
+  }
+}
+
+// Singleton instance
+let configManager: ConfigManager | null = null;
+
+export function getConfigManager(): ConfigManager {
+  if (!configManager) {
+    configManager = new ConfigManager();
+  }
+  return configManager;
+}
