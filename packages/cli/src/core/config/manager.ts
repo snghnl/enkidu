@@ -1,19 +1,19 @@
 import { cosmiconfig } from "cosmiconfig";
 import { join } from "path";
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from "fs";
-import { PkmConfig, pkmConfigSchema } from "./schema.js";
+import { EnkiduConfig, enkiduConfigSchema } from "./schema.js";
 import { getDefaultConfig } from "./defaults.js";
 
 const CONFIG_NAME = "enkidu";
 
 export class ConfigManager {
-  private config: PkmConfig | null = null;
+  private config: EnkiduConfig | null = null;
   private configPath: string | null = null;
 
   /**
    * Load configuration from file or use defaults
    */
-  async loadConfig(searchFrom?: string): Promise<PkmConfig> {
+  async loadConfig(searchFrom?: string): Promise<EnkiduConfig> {
     const explorer = cosmiconfig(CONFIG_NAME, {
       searchPlaces: [
         ".enkidu/config.json",
@@ -30,7 +30,7 @@ export class ConfigManager {
 
       if (result && result.config) {
         // Validate and merge with defaults
-        const validated = pkmConfigSchema.parse({
+        const validated = enkiduConfigSchema.parse({
           ...getDefaultConfig(),
           ...result.config,
         });
@@ -55,7 +55,7 @@ export class ConfigManager {
   /**
    * Get current configuration
    */
-  getConfig(): PkmConfig {
+  getConfig(): EnkiduConfig {
     if (!this.config) {
       throw new Error("Configuration not loaded. Call loadConfig() first.");
     }
@@ -103,7 +103,7 @@ export class ConfigManager {
     current[lastKey] = value;
 
     // Validate the updated config
-    const validated = pkmConfigSchema.parse(config);
+    const validated = enkiduConfigSchema.parse(config);
     this.config = validated;
 
     // Save to file
@@ -136,10 +136,10 @@ export class ConfigManager {
    */
   async initConfig(
     rootDir: string,
-    options: Partial<PkmConfig> = {},
-  ): Promise<PkmConfig> {
+    options: Partial<EnkiduConfig> = {},
+  ): Promise<EnkiduConfig> {
     const defaultConfig = getDefaultConfig(rootDir);
-    const newConfig = pkmConfigSchema.parse({
+    const newConfig = enkiduConfigSchema.parse({
       ...defaultConfig,
       ...options,
       rootDir, // Ensure rootDir is set correctly
@@ -184,7 +184,7 @@ export class ConfigManager {
   /**
    * Find Enkidu root directory by searching upwards
    */
-  static findPkmRoot(startDir: string = process.cwd()): string | null {
+  static findEnkiduRoot(startDir: string = process.cwd()): string | null {
     let currentDir = startDir;
     const root = "/";
 

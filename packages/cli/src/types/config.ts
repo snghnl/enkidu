@@ -1,4 +1,4 @@
-export interface PkmConfig {
+export interface EnkiduConfig {
   version: string;
   rootDir: string;
   editor: string;

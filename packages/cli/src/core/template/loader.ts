@@ -1,9 +1,9 @@
-import { readFile, writeFile, readdir, unlink } from 'fs/promises';
-import { join, dirname } from 'path';
-import { existsSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { Template } from '../../types/template.js';
-import { ensureDir } from '../../utils/fs.js';
+import { readFile, writeFile, readdir, unlink } from "fs/promises";
+import { join, dirname } from "path";
+import { existsSync } from "fs";
+import { fileURLToPath } from "url";
+import { Template } from "../../types/template.js";
+import { ensureDir } from "../../utils/fs.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -15,11 +15,11 @@ export class TemplateLoader {
   private builtInTemplatesPath: string;
   private customTemplatesPath: string;
 
-  constructor(pkmRoot: string) {
+  constructor(enkiduRoot: string) {
     // Built-in templates are in the package
-    this.builtInTemplatesPath = join(__dirname, '../../../templates');
+    this.builtInTemplatesPath = join(__dirname, "../../../templates");
     // Custom templates are in .enkidu/templates
-    this.customTemplatesPath = join(pkmRoot, '.enkidu', 'templates');
+    this.customTemplatesPath = join(enkiduRoot, ".enkidu", "templates");
   }
 
   /**
@@ -33,7 +33,7 @@ export class TemplateLoader {
     for (const file of builtInFiles) {
       const template = await this.loadTemplateFile(
         join(this.builtInTemplatesPath, file),
-        true
+        true,
       );
       templates.push(template);
     }
@@ -44,7 +44,7 @@ export class TemplateLoader {
       for (const file of customFiles) {
         const template = await this.loadTemplateFile(
           join(this.customTemplatesPath, file),
-          false
+          false,
         );
         templates.push(template);
       }
@@ -75,7 +75,11 @@ export class TemplateLoader {
   /**
    * Save custom template
    */
-  async saveTemplate(name: string, content: string, description: string): Promise<void> {
+  async saveTemplate(
+    name: string,
+    content: string,
+    description: string,
+  ): Promise<void> {
     // Ensure custom templates directory exists
     await ensureDir(this.customTemplatesPath);
 
@@ -87,7 +91,7 @@ export class TemplateLoader {
       finalContent = `<!-- ${description} -->\n${content}`;
     }
 
-    await writeFile(templatePath, finalContent, 'utf-8');
+    await writeFile(templatePath, finalContent, "utf-8");
   }
 
   /**
@@ -118,7 +122,7 @@ export class TemplateLoader {
 
     // Check if it's in custom templates directory (safety check)
     if (!templatePath.startsWith(this.customTemplatesPath)) {
-      throw new Error('Cannot delete built-in templates');
+      throw new Error("Cannot delete built-in templates");
     }
 
     await unlink(templatePath);
@@ -133,14 +137,17 @@ export class TemplateLoader {
     }
 
     const files = await readdir(dirPath);
-    return files.filter(file => file.endsWith('.md'));
+    return files.filter((file) => file.endsWith(".md"));
   }
 
   /**
    * Load template file
    */
-  private async loadTemplateFile(filePath: string, isBuiltIn: boolean): Promise<Template> {
-    const content = await readFile(filePath, 'utf-8');
+  private async loadTemplateFile(
+    filePath: string,
+    isBuiltIn: boolean,
+  ): Promise<Template> {
+    const content = await readFile(filePath, "utf-8");
     const name = this.getTemplateName(filePath);
     const description = this.extractDescription(content);
 
@@ -157,8 +164,8 @@ export class TemplateLoader {
    * Extract template name from file path
    */
   private getTemplateName(filePath: string): string {
-    const fileName = filePath.split('/').pop() || '';
-    return fileName.replace('.md', '');
+    const fileName = filePath.split("/").pop() || "";
+    return fileName.replace(".md", "");
   }
 
   /**
@@ -173,14 +180,14 @@ export class TemplateLoader {
 
     // Default descriptions based on common template names
     const descriptions: Record<string, string> = {
-      'daily-default': 'Daily note with Focus, Notes, Done, Reflections',
-      'note-default': 'Basic note template',
-      'blog-post': 'Blog post with Introduction, Content, Conclusion',
-      'project': 'Project note with Goals, Tasks, Resources',
-      'meeting': 'Meeting notes with Agenda, Action Items',
+      "daily-default": "Daily note with Focus, Notes, Done, Reflections",
+      "note-default": "Basic note template",
+      "blog-post": "Blog post with Introduction, Content, Conclusion",
+      project: "Project note with Goals, Tasks, Resources",
+      meeting: "Meeting notes with Agenda, Action Items",
     };
 
     const name = this.getTemplateName(content);
-    return descriptions[name] || 'Custom template';
+    return descriptions[name] || "Custom template";
   }
 }

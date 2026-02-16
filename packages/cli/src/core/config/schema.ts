@@ -36,7 +36,7 @@ export const uiConfigSchema = z.object({
   timeFormat: z.string().default("HH:mm"),
 });
 
-export const pkmConfigSchema = z.object({
+export const enkiduConfigSchema = z.object({
   version: z.string().default("0.1.0"),
   rootDir: z.string(),
   editor: z.string().default(""),
@@ -47,4 +47,4 @@ export const pkmConfigSchema = z.object({
   ui: uiConfigSchema,
 });
 
-export type PkmConfig = z.infer<typeof pkmConfigSchema>;
+export type EnkiduConfig = z.infer<typeof enkiduConfigSchema>;

@@ -1,8 +1,8 @@
-import { join } from 'path';
-import { mkdirSync, writeFileSync, rmSync } from 'fs';
-import type { Note, NoteFrontmatter } from '../types/note.js';
-import type { Template } from '../types/template.js';
-import type { PKMConfig } from '../types/config.js';
+import { join } from "path";
+import { mkdirSync, writeFileSync, rmSync } from "fs";
+import type { Note, NoteFrontmatter } from "../types/note.js";
+import type { Template } from "../types/template.js";
+import type { EnkiduConfig } from "../types/config.js";
 
 /**
  * Test fixtures and utilities for creating test data
@@ -18,8 +18,8 @@ export class TestFixtures {
   /**
    * Create a temporary test directory structure
    */
-  static createTempDir(prefix = 'enkidu-test-'): string {
-    const tempDir = join(process.cwd(), 'test-temp', `${prefix}${Date.now()}`);
+  static createTempDir(prefix = "enkidu-test-"): string {
+    const tempDir = join(process.cwd(), "test-temp", `${prefix}${Date.now()}`);
     mkdirSync(tempDir, { recursive: true });
     return tempDir;
   }
@@ -36,18 +36,18 @@ export class TestFixtures {
   }
 
   /**
-   * Initialize PKM directory structure
+   * Initialize Enkidu directory structure
    */
-  initPkmStructure(): void {
+  initEnkiduStructure(): void {
     const dirs = [
-      'notes',
-      'notes/blog',
-      'notes/projects',
-      'notes/daily',
-      'notes/daily/2026',
-      'notes/daily/2026/02',
-      'templates',
-      '.enkidu',
+      "notes",
+      "notes/blog",
+      "notes/projects",
+      "notes/daily",
+      "notes/daily/2026",
+      "notes/daily/2026/02",
+      "templates",
+      ".enkidu",
     ];
 
     dirs.forEach((dir) => {
@@ -58,31 +58,31 @@ export class TestFixtures {
   /**
    * Create a test config file
    */
-  createConfig(config: Partial<PKMConfig> = {}): void {
-    const defaultConfig: PKMConfig = {
-      version: '1.0.0',
-      pkm: {
-        notesDir: 'notes',
-        templatesDir: 'templates',
-        ...config.pkm,
+  createConfig(config: Partial<EnkiduConfig> = {}): void {
+    const defaultConfig: EnkiduConfig = {
+      version: "1.0.0",
+      enkidu: {
+        notesDir: "notes",
+        templatesDir: "templates",
+        ...config.enkidu,
       },
       daily: {
         enabled: true,
-        directory: 'notes/daily',
-        template: 'daily-default',
-        filenameFormat: 'YYYY/MM/YYYY-MM-DD',
+        directory: "notes/daily",
+        template: "daily-default",
+        filenameFormat: "YYYY/MM/YYYY-MM-DD",
         ...config.daily,
       },
       notes: {
-        defaultCategory: 'general',
-        categories: ['blog', 'projects', 'daily'],
+        defaultCategory: "general",
+        categories: ["blog", "projects", "daily"],
         requireCategory: false,
         ...config.notes,
       },
       sync: {
         enabled: false,
-        target: 'docusaurus',
-        docusaurusRoot: '../website',
+        target: "docusaurus",
+        docusaurusRoot: "../website",
         publishedOnly: true,
         convertWikiLinks: true,
         ...config.sync,
@@ -94,14 +94,14 @@ export class TestFixtures {
         ...config.search,
       },
       ui: {
-        editor: 'vim',
+        editor: "vim",
         colors: true,
         verbose: false,
         ...config.ui,
       },
     };
 
-    const configPath = join(this.tempDir, '.enkidu', 'config.json');
+    const configPath = join(this.tempDir, ".enkidu", "config.json");
     writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
   }
 
@@ -116,13 +116,13 @@ export class TestFixtures {
   }): string {
     const {
       slug,
-      category = 'general',
+      category = "general",
       frontmatter = {},
-      content = 'Test note content.',
+      content = "Test note content.",
     } = options;
 
     const defaultFrontmatter: NoteFrontmatter = {
-      title: frontmatter.title || slug.replace(/-/g, ' '),
+      title: frontmatter.title || slug.replace(/-/g, " "),
       created: frontmatter.created || new Date().toISOString(),
       updated: frontmatter.updated || new Date().toISOString(),
       tags: frontmatter.tags || [],
@@ -133,19 +133,19 @@ export class TestFixtures {
     const frontmatterStr = Object.entries(defaultFrontmatter)
       .map(([key, value]) => {
         if (Array.isArray(value)) {
-          return `${key}: [${value.map((v) => `"${v}"`).join(', ')}]`;
-        } else if (typeof value === 'string') {
+          return `${key}: [${value.map((v) => `"${v}"`).join(", ")}]`;
+        } else if (typeof value === "string") {
           return `${key}: "${value}"`;
         } else {
           return `${key}: ${value}`;
         }
       })
-      .join('\n');
+      .join("\n");
 
     const noteContent = `---\n${frontmatterStr}\n---\n\n${content}`;
-    const notePath = join(this.tempDir, 'notes', category, `${slug}.md`);
+    const notePath = join(this.tempDir, "notes", category, `${slug}.md`);
 
-    mkdirSync(join(this.tempDir, 'notes', category), { recursive: true });
+    mkdirSync(join(this.tempDir, "notes", category), { recursive: true });
     writeFileSync(notePath, noteContent);
 
     return notePath;
@@ -154,27 +154,30 @@ export class TestFixtures {
   /**
    * Create a daily note
    */
-  createDailyNote(date: string, content = '# Daily Note\n\nTest content.'): string {
-    const [year, month] = date.split('-');
-    const dailyDir = join(this.tempDir, 'notes/daily', year, month);
+  createDailyNote(
+    date: string,
+    content = "# Daily Note\n\nTest content.",
+  ): string {
+    const [year, month] = date.split("-");
+    const dailyDir = join(this.tempDir, "notes/daily", year, month);
     mkdirSync(dailyDir, { recursive: true });
 
     const frontmatter = {
       title: `Daily Note - ${date}`,
       created: new Date(date).toISOString(),
       updated: new Date(date).toISOString(),
-      tags: ['daily'],
-      category: 'daily',
+      tags: ["daily"],
+      category: "daily",
     };
 
     const frontmatterStr = Object.entries(frontmatter)
       .map(([key, value]) => {
         if (Array.isArray(value)) {
-          return `${key}: [${value.map((v) => `"${v}"`).join(', ')}]`;
+          return `${key}: [${value.map((v) => `"${v}"`).join(", ")}]`;
         }
         return `${key}: "${value}"`;
       })
-      .join('\n');
+      .join("\n");
 
     const noteContent = `---\n${frontmatterStr}\n---\n\n${content}`;
     const notePath = join(dailyDir, `${date}.md`);
@@ -195,37 +198,41 @@ export class TestFixtures {
     const {
       name,
       frontmatter = {},
-      content = '# {{title}}\n\nCreated: {{created}}',
+      content = "# {{title}}\n\nCreated: {{created}}",
       isCustom = false,
     } = options;
 
     const defaultFrontmatter = {
-      title: '{{title}}',
-      created: '{{created}}',
-      updated: '{{updated}}',
+      title: "{{title}}",
+      created: "{{created}}",
+      updated: "{{updated}}",
       tags: [],
-      category: '{{category}}',
+      category: "{{category}}",
       ...frontmatter,
     };
 
     const frontmatterStr = Object.entries(defaultFrontmatter)
       .map(([key, value]) => {
         if (Array.isArray(value)) {
-          return `${key}: [${value.map((v) => `"${v}"`).join(', ')}]`;
+          return `${key}: [${value.map((v) => `"${v}"`).join(", ")}]`;
         }
         return `${key}: "${value}"`;
       })
-      .join('\n');
+      .join("\n");
 
     const templateContent = `---\n${frontmatterStr}\n---\n\n${content}`;
     const templatePath = join(
       this.tempDir,
-      'templates',
-      isCustom ? 'custom' : '',
-      `${name}.md`
+      "templates",
+      isCustom ? "custom" : "",
+      `${name}.md`,
     );
 
-    const templateDir = join(this.tempDir, 'templates', isCustom ? 'custom' : '');
+    const templateDir = join(
+      this.tempDir,
+      "templates",
+      isCustom ? "custom" : "",
+    );
     mkdirSync(templateDir, { recursive: true });
     writeFileSync(templatePath, templateContent);
 
@@ -235,7 +242,7 @@ export class TestFixtures {
   /**
    * Get the temp directory path
    */
-  getPath(relativePath = ''): string {
+  getPath(relativePath = ""): string {
     return relativePath ? join(this.tempDir, relativePath) : this.tempDir;
   }
 }
@@ -245,46 +252,49 @@ export class TestFixtures {
  */
 export const sampleNotes = {
   basicNote: {
-    slug: 'basic-note',
+    slug: "basic-note",
     frontmatter: {
-      title: 'Basic Note',
-      tags: ['test', 'sample'],
-      category: 'general',
+      title: "Basic Note",
+      tags: ["test", "sample"],
+      category: "general",
     },
-    content: 'This is a basic test note.',
+    content: "This is a basic test note.",
   },
 
   blogPost: {
-    slug: 'my-blog-post',
+    slug: "my-blog-post",
     frontmatter: {
-      title: 'My Blog Post',
-      tags: ['blog', 'writing'],
-      category: 'blog',
+      title: "My Blog Post",
+      tags: ["blog", "writing"],
+      category: "blog",
       published: true,
-      publishedDate: '2026-02-15',
+      publishedDate: "2026-02-15",
     },
-    content: '# My Blog Post\n\nThis is a blog post with [[wiki-links]] to other notes.',
+    content:
+      "# My Blog Post\n\nThis is a blog post with [[wiki-links]] to other notes.",
   },
 
   projectNote: {
-    slug: 'project-alpha',
+    slug: "project-alpha",
     frontmatter: {
-      title: 'Project Alpha',
-      tags: ['project', 'work'],
-      category: 'projects',
-      status: 'in-progress',
+      title: "Project Alpha",
+      tags: ["project", "work"],
+      category: "projects",
+      status: "in-progress",
     },
-    content: '# Project Alpha\n\n## Overview\n\nLinks to [[basic-note]] and [[my-blog-post]].',
+    content:
+      "# Project Alpha\n\n## Overview\n\nLinks to [[basic-note]] and [[my-blog-post]].",
   },
 
   noteWithBrokenLinks: {
-    slug: 'broken-links',
+    slug: "broken-links",
     frontmatter: {
-      title: 'Note with Broken Links',
-      tags: ['test'],
-      category: 'general',
+      title: "Note with Broken Links",
+      tags: ["test"],
+      category: "general",
     },
-    content: 'This note has [[non-existent-note]] and [[another-missing-note|Missing]].',
+    content:
+      "This note has [[non-existent-note]] and [[another-missing-note|Missing]].",
   },
 };
 
@@ -293,23 +303,24 @@ export const sampleNotes = {
  */
 export const sampleTemplates = {
   basic: {
-    name: 'basic',
+    name: "basic",
     frontmatter: {
-      title: '{{title}}',
-      created: '{{created}}',
-      updated: '{{updated}}',
+      title: "{{title}}",
+      created: "{{created}}",
+      updated: "{{updated}}",
       tags: [],
     },
-    content: '# {{title}}\n\nCreated on {{created}}.\n\n## Content\n\nYour content here.',
+    content:
+      "# {{title}}\n\nCreated on {{created}}.\n\n## Content\n\nYour content here.",
   },
 
   meeting: {
-    name: 'meeting',
+    name: "meeting",
     frontmatter: {
-      title: '{{title}}',
-      created: '{{created}}',
-      tags: ['meeting'],
-      category: 'meetings',
+      title: "{{title}}",
+      created: "{{created}}",
+      tags: ["meeting"],
+      category: "meetings",
       attendees: [],
     },
     content: `# {{title}}
@@ -334,23 +345,23 @@ export const sampleTemplates = {
  */
 export const sampleConfigs = {
   minimal: {
-    version: '1.0.0',
-    pkm: {
-      notesDir: 'notes',
-      templatesDir: 'templates',
+    version: "1.0.0",
+    enkidu: {
+      notesDir: "notes",
+      templatesDir: "templates",
     },
   },
 
   withSync: {
-    version: '1.0.0',
-    pkm: {
-      notesDir: 'notes',
-      templatesDir: 'templates',
+    version: "1.0.0",
+    enkidu: {
+      notesDir: "notes",
+      templatesDir: "templates",
     },
     sync: {
       enabled: true,
-      target: 'docusaurus' as const,
-      docusaurusRoot: '../website',
+      target: "docusaurus" as const,
+      docusaurusRoot: "../website",
       publishedOnly: true,
       convertWikiLinks: true,
     },

@@ -23,10 +23,10 @@ import { resolveWikiLink } from "./resolver.js";
  */
 export class LinkIndex {
   private index: Map<string, LinkIndexEntry> = new Map();
-  private pkmRoot: string;
+  private enkiduRoot: string;
 
-  constructor(pkmRoot: string) {
-    this.pkmRoot = pkmRoot;
+  constructor(enkiduRoot: string) {
+    this.enkiduRoot = enkiduRoot;
   }
 
   /**
@@ -101,7 +101,7 @@ export class LinkIndex {
 
     for (const [slug, entry] of this.index.entries()) {
       for (const link of entry.outgoingLinks) {
-        const resolved = resolveWikiLink(link.target, this.pkmRoot);
+        const resolved = resolveWikiLink(link.target, this.enkiduRoot);
 
         if (!resolved.exists) {
           brokenLinks.push({
@@ -291,17 +291,17 @@ export class LinkIndex {
     const files: string[] = [];
 
     try {
-      const notesPath = join(this.pkmRoot, "notes");
+      const notesPath = join(this.enkiduRoot, "notes");
       if (fileExists(notesPath)) {
         files.push(...listFilesRecursive(notesPath, ".md"));
       }
 
-      const blogPath = join(this.pkmRoot, "blog");
+      const blogPath = join(this.enkiduRoot, "blog");
       if (fileExists(blogPath)) {
         files.push(...listFilesRecursive(blogPath, ".md"));
       }
 
-      const dailyPath = join(this.pkmRoot, "daily");
+      const dailyPath = join(this.enkiduRoot, "daily");
       if (fileExists(dailyPath)) {
         files.push(...listFilesRecursive(dailyPath, ".md"));
       }
@@ -326,7 +326,7 @@ export class LinkIndex {
   }
 
   private resolveTargetSlug(target: string): string | null {
-    const resolved = resolveWikiLink(target, this.pkmRoot);
+    const resolved = resolveWikiLink(target, this.enkiduRoot);
 
     if (resolved.exists && resolved.resolvedPath) {
       return this.getSlugFromPath(resolved.resolvedPath);
@@ -349,8 +349,8 @@ export class LinkIndex {
 /**
  * Create and build a new link index
  */
-export async function buildLinkIndex(pkmRoot: string): Promise<LinkIndex> {
-  const index = new LinkIndex(pkmRoot);
+export async function buildLinkIndex(enkiduRoot: string): Promise<LinkIndex> {
+  const index = new LinkIndex(enkiduRoot);
   await index.buildIndex();
   return index;
 }
@@ -359,10 +359,10 @@ export async function buildLinkIndex(pkmRoot: string): Promise<LinkIndex> {
  * Load cached index or build new one
  */
 export async function loadOrBuildLinkIndex(
-  pkmRoot: string,
+  enkiduRoot: string,
   cachePath?: string,
 ): Promise<LinkIndex> {
-  const index = new LinkIndex(pkmRoot);
+  const index = new LinkIndex(enkiduRoot);
 
   if (cachePath) {
     const cacheValid = await index.isCacheValid(cachePath);

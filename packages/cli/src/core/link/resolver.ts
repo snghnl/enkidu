@@ -6,12 +6,12 @@ import { slugify } from "../../utils/slug.js";
 /**
  * Resolve a wiki-link to an actual file path
  * @param linkTarget - The target from the wiki-link (e.g., "note-name")
- * @param pkmRoot - Root directory of PKM system
+ * @param enkiduRoot - Root directory of Enkidu system
  * @returns ResolvedLink with path if found
  */
 export function resolveWikiLink(
   linkTarget: string,
-  pkmRoot: string,
+  enkiduRoot: string,
 ): ResolvedLink {
   const link: WikiLink = {
     raw: `[[${linkTarget}]]`,
@@ -20,7 +20,7 @@ export function resolveWikiLink(
     endIndex: linkTarget.length + 4,
   };
 
-  const resolvedPath = findNoteByLink(linkTarget, pkmRoot);
+  const resolvedPath = findNoteByLink(linkTarget, enkiduRoot);
 
   if (resolvedPath) {
     return {
@@ -31,7 +31,7 @@ export function resolveWikiLink(
   }
 
   // Generate suggestions for broken links
-  const suggestions = findSimilarNotes(linkTarget, pkmRoot);
+  const suggestions = findSimilarNotes(linkTarget, enkiduRoot);
 
   return {
     link,
@@ -43,12 +43,15 @@ export function resolveWikiLink(
 /**
  * Find note file by various matching strategies
  * @param target - Link target
- * @param pkmRoot - PKM root directory
+ * @param enkiduRoot - Enkidu root directory
  * @returns Absolute path to note file or null
  */
-export function findNoteByLink(target: string, pkmRoot: string): string | null {
+export function findNoteByLink(
+  target: string,
+  enkiduRoot: string,
+): string | null {
   // Get all markdown files
-  const allFiles = getAllMarkdownFiles(pkmRoot);
+  const allFiles = getAllMarkdownFiles(enkiduRoot);
 
   // Strategy 1: Exact slug match
   const exactMatch = allFiles.find((file) => {
@@ -83,7 +86,7 @@ export function findNoteByLink(target: string, pkmRoot: string): string | null {
   }
 
   // Strategy 4: Daily note pattern (YYYY-MM-DD or YYYY/MM/DD)
-  const dailyMatch = findDailyNote(target, pkmRoot);
+  const dailyMatch = findDailyNote(target, enkiduRoot);
   if (dailyMatch) {
     return dailyMatch;
   }
@@ -94,16 +97,16 @@ export function findNoteByLink(target: string, pkmRoot: string): string | null {
 /**
  * Find similar note names for suggestions
  * @param target - Link target
- * @param pkmRoot - PKM root directory
+ * @param enkiduRoot - Enkidu root directory
  * @param maxSuggestions - Maximum number of suggestions
  * @returns Array of similar note slugs
  */
 export function findSimilarNotes(
   target: string,
-  pkmRoot: string,
+  enkiduRoot: string,
   maxSuggestions: number = 5,
 ): string[] {
-  const allFiles = getAllMarkdownFiles(pkmRoot);
+  const allFiles = getAllMarkdownFiles(enkiduRoot);
   const allSlugs = allFiles.map((file) => basename(file, ".md"));
 
   // Calculate similarity scores using Levenshtein distance
@@ -120,28 +123,28 @@ export function findSimilarNotes(
 }
 
 /**
- * Get all markdown files in PKM directory
- * @param pkmRoot - PKM root directory
+ * Get all markdown files in Enkidu directory
+ * @param enkiduRoot - Enkidu root directory
  * @returns Array of absolute file paths
  */
-function getAllMarkdownFiles(pkmRoot: string): string[] {
+function getAllMarkdownFiles(enkiduRoot: string): string[] {
   const files: string[] = [];
 
   try {
     // Search in notes directory
-    const notesPath = join(pkmRoot, "notes");
+    const notesPath = join(enkiduRoot, "notes");
     if (fileExists(notesPath)) {
       files.push(...listFilesRecursive(notesPath, ".md"));
     }
 
     // Search in blog directory
-    const blogPath = join(pkmRoot, "blog");
+    const blogPath = join(enkiduRoot, "blog");
     if (fileExists(blogPath)) {
       files.push(...listFilesRecursive(blogPath, ".md"));
     }
 
     // Search in daily directory
-    const dailyPath = join(pkmRoot, "daily");
+    const dailyPath = join(enkiduRoot, "daily");
     if (fileExists(dailyPath)) {
       files.push(...listFilesRecursive(dailyPath, ".md"));
     }
@@ -155,10 +158,10 @@ function getAllMarkdownFiles(pkmRoot: string): string[] {
 /**
  * Try to find daily note by date pattern
  * @param target - Link target (might be date format)
- * @param pkmRoot - PKM root directory
+ * @param enkiduRoot - Enkidu root directory
  * @returns Path to daily note or null
  */
-function findDailyNote(target: string, pkmRoot: string): string | null {
+function findDailyNote(target: string, enkiduRoot: string): string | null {
   // Match patterns like: 2026-02-16, 2026/02/16, 20260216
   const datePatterns = [
     /^(\d{4})-(\d{2})-(\d{2})$/, // YYYY-MM-DD
@@ -170,7 +173,7 @@ function findDailyNote(target: string, pkmRoot: string): string | null {
     const match = target.match(pattern);
     if (match) {
       const [, year, month, day] = match;
-      const dailyPath = join(pkmRoot, "daily", year, month, `${day}.md`);
+      const dailyPath = join(enkiduRoot, "daily", year, month, `${day}.md`);
 
       if (fileExists(dailyPath)) {
         return dailyPath;
@@ -218,22 +221,22 @@ function levenshteinDistance(a: string, b: string): number {
 /**
  * Batch resolve multiple links
  * @param links - Array of WikiLinks
- * @param pkmRoot - PKM root directory
+ * @param enkiduRoot - Enkidu root directory
  * @returns Array of ResolvedLinks
  */
 export function resolveWikiLinks(
   links: WikiLink[],
-  pkmRoot: string,
+  enkiduRoot: string,
 ): ResolvedLink[] {
-  return links.map((link) => resolveWikiLink(link.target, pkmRoot));
+  return links.map((link) => resolveWikiLink(link.target, enkiduRoot));
 }
 
 /**
  * Check if a link target exists
  * @param target - Link target
- * @param pkmRoot - PKM root directory
+ * @param enkiduRoot - Enkidu root directory
  * @returns True if target note exists
  */
-export function linkExists(target: string, pkmRoot: string): boolean {
-  return findNoteByLink(target, pkmRoot) !== null;
+export function linkExists(target: string, enkiduRoot: string): boolean {
+  return findNoteByLink(target, enkiduRoot) !== null;
 }

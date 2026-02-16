@@ -45,7 +45,7 @@ node dist/cli.js --help
 
 ## Quick Start
 
-### 1. Initialize PKM
+### 1. Initialize Enkidu
 
 ```bash
 enkidu init

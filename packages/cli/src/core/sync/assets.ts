@@ -1,5 +1,5 @@
-import { join, basename, dirname } from 'path';
-import { copyFile, fileExists, ensureDir } from '../../utils/fs.js';
+import { join, basename, dirname } from "path";
+import { copyFile, fileExists, ensureDir } from "../../utils/fs.js";
 
 /**
  * Extract image references from markdown content
@@ -31,18 +31,18 @@ export function extractImageReferences(content: string): string[] {
 export function copyAsset(
   sourcePath: string,
   targetDir: string,
-  pkmRoot: string
+  enkiduRoot: string,
 ): { success: boolean; targetPath?: string; error?: string } {
   try {
-    // Resolve source path (could be relative to PKM root)
+    // Resolve source path (could be relative to Enkidu root)
     let resolvedSource = sourcePath;
-    if (!sourcePath.startsWith('/')) {
+    if (!sourcePath.startsWith("/")) {
       // Try attachments directory first
-      resolvedSource = join(pkmRoot, 'attachments', sourcePath);
+      resolvedSource = join(enkiduRoot, "attachments", sourcePath);
 
       if (!fileExists(resolvedSource)) {
-        // Try relative to PKM root
-        resolvedSource = join(pkmRoot, sourcePath);
+        // Try relative to Enkidu root
+        resolvedSource = join(enkiduRoot, sourcePath);
       }
     }
 
@@ -69,7 +69,7 @@ export function copyAsset(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
@@ -79,18 +79,27 @@ export function copyAsset(
  */
 export function updateImagePaths(
   content: string,
-  imageMapping: Map<string, string>
+  imageMapping: Map<string, string>,
 ): string {
   let updatedContent = content;
 
   for (const [originalPath, newPath] of imageMapping.entries()) {
     // Update markdown images
-    const markdownRegex = new RegExp(`!\\[([^\\]]*)\\]\\(${escapeRegex(originalPath)}\\)`, 'g');
+    const markdownRegex = new RegExp(
+      `!\\[([^\\]]*)\\]\\(${escapeRegex(originalPath)}\\)`,
+      "g",
+    );
     updatedContent = updatedContent.replace(markdownRegex, `![$1](${newPath})`);
 
     // Update HTML images
-    const htmlRegex = new RegExp(`<img([^>]+)src="${escapeRegex(originalPath)}"`, 'g');
-    updatedContent = updatedContent.replace(htmlRegex, `<img$1src="${newPath}"`);
+    const htmlRegex = new RegExp(
+      `<img([^>]+)src="${escapeRegex(originalPath)}"`,
+      "g",
+    );
+    updatedContent = updatedContent.replace(
+      htmlRegex,
+      `<img$1src="${newPath}"`,
+    );
   }
 
   return updatedContent;
@@ -100,7 +109,7 @@ export function updateImagePaths(
  * Escape special regex characters
  */
 function escapeRegex(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 /**
@@ -108,8 +117,8 @@ function escapeRegex(str: string): string {
  */
 export function copyNoteAssets(
   content: string,
-  pkmRoot: string,
-  targetDir: string
+  enkiduRoot: string,
+  targetDir: string,
 ): {
   updatedContent: string;
   copiedAssets: string[];
@@ -122,11 +131,11 @@ export function copyNoteAssets(
 
   for (const imagePath of images) {
     // Skip external URLs
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
       continue;
     }
 
-    const result = copyAsset(imagePath, targetDir, pkmRoot);
+    const result = copyAsset(imagePath, targetDir, enkiduRoot);
 
     if (result.success && result.targetPath) {
       // Map to Docusaurus static path

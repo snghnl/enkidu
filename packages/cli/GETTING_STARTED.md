@@ -17,7 +17,7 @@ pnpm install
 cd packages/cli
 pnpm build
 
-# Link globally (makes 'pkm' available everywhere)
+# Link globally (makes 'enkidu' available everywhere)
 pnpm link --global
 
 # Test it
@@ -26,7 +26,7 @@ enkidu --version
 
 ## First Steps
 
-### 1. Initialize Your PKM
+### 1. Initialize Your Enkidu
 
 ```bash
 enkidu init

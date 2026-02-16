@@ -1,11 +1,11 @@
-import { join, basename } from 'path';
-import { Note } from '../../types/note.js';
-import { PkmConfig } from '../config/schema.js';
-import { writeFile, copyFile, ensureDir } from '../../utils/fs.js';
-import { stringifyFrontmatter } from '../note/frontmatter.js';
-import { transformToDocusaurusBlog } from './transformer.js';
-import { copyNoteAssets } from './assets.js';
-import { validateSyncConfig, getPublishableNotes } from './validator.js';
+import { join, basename } from "path";
+import { Note } from "../../types/note.js";
+import { EnkiduConfig } from "../config/schema.js";
+import { writeFile, copyFile, ensureDir } from "../../utils/fs.js";
+import { stringifyFrontmatter } from "../note/frontmatter.js";
+import { transformToDocusaurusBlog } from "./transformer.js";
+import { copyNoteAssets } from "./assets.js";
+import { validateSyncConfig, getPublishableNotes } from "./validator.js";
 
 export interface SyncResult {
   success: boolean;
@@ -22,12 +22,12 @@ export interface SyncOptions {
 }
 
 export class DocusaurusSync {
-  private config: PkmConfig;
-  private pkmRoot: string;
+  private config: EnkiduConfig;
+  private enkiduRoot: string;
 
-  constructor(config: PkmConfig, pkmRoot: string) {
+  constructor(config: EnkiduConfig, enkiduRoot: string) {
     this.config = config;
-    this.pkmRoot = pkmRoot;
+    this.enkiduRoot = enkiduRoot;
   }
 
   /**
@@ -54,7 +54,9 @@ export class DocusaurusSync {
     const publishableNotes = getPublishableNotes(notes, this.config);
 
     if (publishableNotes.length === 0) {
-      result.errors.push('No publishable notes found. Set "publish: true" in frontmatter.');
+      result.errors.push(
+        'No publishable notes found. Set "publish: true" in frontmatter.',
+      );
       return result;
     }
 
@@ -70,7 +72,9 @@ export class DocusaurusSync {
           result.errors.push(...syncResult.errors);
         }
       } catch (error) {
-        result.errors.push(`Error syncing ${note.slug}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        result.errors.push(
+          `Error syncing ${note.slug}: ${error instanceof Error ? error.message : "Unknown error"}`,
+        );
       }
     }
 
@@ -102,8 +106,8 @@ export class DocusaurusSync {
       if (this.config.sync.copyAssets && this.config.sync.assetsPath) {
         const assetsResult = copyNoteAssets(
           content,
-          this.pkmRoot,
-          this.config.sync.assetsPath
+          this.enkiduRoot,
+          this.config.sync.assetsPath,
         );
 
         content = assetsResult.updatedContent;
@@ -124,7 +128,10 @@ export class DocusaurusSync {
       const outputPath = join(this.config.sync.target, outputFilename);
 
       // Create markdown content
-      const outputContent = stringifyFrontmatter(transformedFrontmatter, content);
+      const outputContent = stringifyFrontmatter(
+        transformedFrontmatter,
+        content,
+      );
 
       if (!options.dryRun) {
         // Ensure target directory exists
@@ -136,10 +143,11 @@ export class DocusaurusSync {
 
       result.syncedNotes.push(note.slug);
       result.success = true;
-
     } catch (error) {
       result.success = false;
-      result.errors.push(error instanceof Error ? error.message : 'Unknown error');
+      result.errors.push(
+        error instanceof Error ? error.message : "Unknown error",
+      );
     }
 
     return result;
@@ -150,11 +158,11 @@ export class DocusaurusSync {
    */
   private generateOutputFilename(note: Note): string {
     // For blog posts, use date-based filename if available
-    if (note.frontmatter.type === 'blog' && note.frontmatter.created) {
+    if (note.frontmatter.type === "blog" && note.frontmatter.created) {
       const date = new Date(note.frontmatter.created);
       const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
 
       return `${year}-${month}-${day}-${note.slug}.md`;
     }

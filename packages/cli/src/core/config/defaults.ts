@@ -1,13 +1,13 @@
-import { PkmConfig } from "../config/schema.js";
+import { EnkiduConfig } from "../config/schema.js";
 import { homedir } from "os";
 import { join } from "path";
 
-export function getDefaultConfig(rootDir?: string): PkmConfig {
-  const pkmRoot = rootDir || join(homedir(), "enkidu");
+export function getDefaultConfig(rootDir?: string): EnkiduConfig {
+  const enkiduRoot = rootDir || join(homedir(), "enkidu");
 
   return {
     version: "0.1.0",
-    rootDir: pkmRoot,
+    rootDir: enkiduRoot,
     editor: process.env.EDITOR || "vim",
     daily: {
       path: "daily",

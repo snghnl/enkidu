@@ -247,7 +247,7 @@ export const logger = Logger.getInstance();
 /**
  * Initialize logger with configuration
  */
-export function initLogger(pkmRoot?: string): void {
+export function initLogger(enkiduRoot?: string): void {
   const instance = Logger.getInstance();
   const config: Partial<LoggerConfig> = {
     level:
@@ -255,9 +255,9 @@ export function initLogger(pkmRoot?: string): void {
     includeTimestamp: true,
   };
 
-  if (pkmRoot) {
+  if (enkiduRoot) {
     config.logToFile = true;
-    config.logFilePath = join(pkmRoot, ".enkidu", "logs", "enkidu.log");
+    config.logFilePath = join(enkiduRoot, ".enkidu", "logs", "enkidu.log");
   }
 
   Logger.getInstance(config);

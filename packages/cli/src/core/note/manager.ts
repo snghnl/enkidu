@@ -24,15 +24,15 @@ import { getConfigManager } from "../config/manager.js";
 
 export class NoteManager {
   private config: any;
-  private pkmRoot: string;
+  private enkiduRoot: string;
 
-  constructor(pkmRoot: string) {
-    this.pkmRoot = pkmRoot;
+  constructor(enkiduRoot: string) {
+    this.enkiduRoot = enkiduRoot;
   }
 
   async initialize(): Promise<void> {
     const manager = getConfigManager();
-    await manager.loadConfig(this.pkmRoot);
+    await manager.loadConfig(this.enkiduRoot);
     this.config = manager.getConfig();
   }
 
@@ -59,12 +59,12 @@ export class NoteManager {
     // Build file path
     let notePath: string;
     if (noteType === "blog") {
-      notePath = join(this.pkmRoot, "blog", `${slug}.md`);
+      notePath = join(this.enkiduRoot, "blog", `${slug}.md`);
     } else if (noteType === "daily") {
       // Daily notes are handled separately
       throw new Error("Use daily note methods for creating daily notes");
     } else {
-      notePath = join(this.pkmRoot, "notes", category, `${slug}.md`);
+      notePath = join(this.enkiduRoot, "notes", category, `${slug}.md`);
     }
 
     // Check if note already exists
@@ -106,7 +106,7 @@ export class NoteManager {
     if (slugOrPath.includes("/") || slugOrPath.endsWith(".md")) {
       notePath = slugOrPath.startsWith("/")
         ? slugOrPath
-        : join(this.pkmRoot, slugOrPath);
+        : join(this.enkiduRoot, slugOrPath);
     } else {
       // Search for note by slug
       const foundPath = await this.findNoteBySlug(slugOrPath);
@@ -191,13 +191,13 @@ export class NoteManager {
     // Determine search paths
     const searchPaths: string[] = [];
     if (options.type === "blog") {
-      searchPaths.push(join(this.pkmRoot, "blog"));
+      searchPaths.push(join(this.enkiduRoot, "blog"));
     } else if (options.type === "daily") {
-      searchPaths.push(join(this.pkmRoot, "daily"));
+      searchPaths.push(join(this.enkiduRoot, "daily"));
     } else if (options.category) {
-      searchPaths.push(join(this.pkmRoot, "notes", options.category));
+      searchPaths.push(join(this.enkiduRoot, "notes", options.category));
     } else {
-      searchPaths.push(join(this.pkmRoot, "notes"));
+      searchPaths.push(join(this.enkiduRoot, "notes"));
     }
 
     // Collect all markdown files
@@ -242,8 +242,8 @@ export class NoteManager {
    */
   async findNoteBySlug(slug: string): Promise<string | null> {
     const allFiles = [
-      ...listFilesRecursive(join(this.pkmRoot, "notes"), ".md"),
-      ...listFilesRecursive(join(this.pkmRoot, "blog"), ".md"),
+      ...listFilesRecursive(join(this.enkiduRoot, "notes"), ".md"),
+      ...listFilesRecursive(join(this.enkiduRoot, "blog"), ".md"),
     ];
 
     for (const file of allFiles) {
@@ -323,7 +323,7 @@ export class NoteManager {
     // If it's not a blog post, move the file
     if (note.frontmatter.type === "note") {
       const newPath = join(
-        this.pkmRoot,
+        this.enkiduRoot,
         "notes",
         newCategory,
         basename(note.filePath),
@@ -352,7 +352,7 @@ export class NoteManager {
 
     // Build path: daily/YYYY/MM/DD.md
     const dailyPath = join(
-      this.pkmRoot,
+      this.enkiduRoot,
       this.config.daily.path,
       `${year}`,
       month,
@@ -439,7 +439,7 @@ export class NoteManager {
    * List daily notes for a date range
    */
   async listDailyNotes(startDate?: Date, endDate?: Date): Promise<Note[]> {
-    const dailyPath = join(this.pkmRoot, this.config.daily.path);
+    const dailyPath = join(this.enkiduRoot, this.config.daily.path);
     const files = listFilesRecursive(dailyPath, ".md");
     const notes: Note[] = [];
 

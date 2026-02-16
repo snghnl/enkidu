@@ -15,9 +15,9 @@ import { ConfigManager } from "./core/config/manager.js";
 import { initLogger } from "./utils/logger.js";
 
 // Initialize logger if we're in a workspace
-const pkmRoot = ConfigManager.findPkmRoot();
-if (pkmRoot) {
-  initLogger(pkmRoot);
+const enkiduRoot = ConfigManager.findEnkiduRoot();
+if (enkiduRoot) {
+  initLogger(enkiduRoot);
 }
 
 const program = new Command();

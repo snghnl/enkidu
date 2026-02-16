@@ -17,16 +17,16 @@ linkCommand
   .argument("<slug>", "Note slug")
   .action(async (slug: string) => {
     try {
-      const pkmRoot = ConfigManager.findPkmRoot();
-      if (!pkmRoot) {
-        console.error("PKM not initialized. Run 'enkidu init' first.");
+      const enkiduRoot = ConfigManager.findEnkiduRoot();
+      if (!enkiduRoot) {
+        console.error("Enkidu not initialized. Run 'enkidu init' first.");
         process.exit(1);
       }
 
       const spinner = ora("Building link index...").start();
 
-      const cachePath = join(pkmRoot, ".enkidu", "cache", "links.json");
-      const linkIndex = await loadOrBuildLinkIndex(pkmRoot, cachePath);
+      const cachePath = join(enkiduRoot, ".enkidu", "cache", "links.json");
+      const linkIndex = await loadOrBuildLinkIndex(enkiduRoot, cachePath);
 
       spinner.succeed("Link index built");
 
@@ -70,16 +70,16 @@ linkCommand
   .argument("<slug>", "Note slug")
   .action(async (slug: string) => {
     try {
-      const pkmRoot = ConfigManager.findPkmRoot();
-      if (!pkmRoot) {
-        console.error("PKM not initialized. Run 'enkidu init' first.");
+      const enkiduRoot = ConfigManager.findEnkiduRoot();
+      if (!enkiduRoot) {
+        console.error("Enkidu not initialized. Run 'enkidu init' first.");
         process.exit(1);
       }
 
       const spinner = ora("Building link index...").start();
 
-      const cachePath = join(pkmRoot, ".enkidu", "cache", "links.json");
-      const linkIndex = await loadOrBuildLinkIndex(pkmRoot, cachePath);
+      const cachePath = join(enkiduRoot, ".enkidu", "cache", "links.json");
+      const linkIndex = await loadOrBuildLinkIndex(enkiduRoot, cachePath);
 
       spinner.succeed("Link index built");
 
@@ -99,7 +99,7 @@ linkCommand
       console.log();
 
       for (const link of outgoingLinks) {
-        const resolved = resolveWikiLink(link.target, pkmRoot);
+        const resolved = resolveWikiLink(link.target, enkiduRoot);
         const status = resolved.exists ? chalk.green("✓") : chalk.red("✗");
         const lineInfo = link.line ? chalk.gray(`:${link.line}`) : "";
 
@@ -135,15 +135,15 @@ linkCommand
   .option("--fix", "Suggest fixes for broken links")
   .action(async (options) => {
     try {
-      const pkmRoot = ConfigManager.findPkmRoot();
-      if (!pkmRoot) {
-        console.error("PKM not initialized. Run 'enkidu init' first.");
+      const enkiduRoot = ConfigManager.findEnkiduRoot();
+      if (!enkiduRoot) {
+        console.error("Enkidu not initialized. Run 'enkidu init' first.");
         process.exit(1);
       }
 
       const spinner = ora("Building link index...").start();
 
-      const linkIndex = await buildLinkIndex(pkmRoot);
+      const linkIndex = await buildLinkIndex(enkiduRoot);
       const stats = linkIndex.getStatistics();
 
       spinner.succeed(
@@ -213,16 +213,16 @@ linkCommand
   .description("Show link statistics and insights")
   .action(async () => {
     try {
-      const pkmRoot = ConfigManager.findPkmRoot();
-      if (!pkmRoot) {
-        console.error("PKM not initialized. Run 'enkidu init' first.");
+      const enkiduRoot = ConfigManager.findEnkiduRoot();
+      if (!enkiduRoot) {
+        console.error("Enkidu not initialized. Run 'enkidu init' first.");
         process.exit(1);
       }
 
       const spinner = ora("Analyzing links...").start();
 
-      const cachePath = join(pkmRoot, ".enkidu", "cache", "links.json");
-      const linkIndex = await loadOrBuildLinkIndex(pkmRoot, cachePath);
+      const cachePath = join(enkiduRoot, ".enkidu", "cache", "links.json");
+      const linkIndex = await loadOrBuildLinkIndex(enkiduRoot, cachePath);
 
       const stats = linkIndex.getStatistics();
       const orphans = linkIndex.getOrphanedNotes();

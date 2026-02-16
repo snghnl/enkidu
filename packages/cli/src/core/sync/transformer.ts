@@ -1,8 +1,8 @@
-import { NoteFrontmatter } from '../../types/note.js';
-import { format } from 'date-fns';
+import { NoteFrontmatter } from "../../types/note.js";
+import { format } from "date-fns";
 
 /**
- * Transform PKM frontmatter to Docusaurus blog post format
+ * Transform Enkidu frontmatter to Docusaurus blog post format
  */
 export function transformToDocusaurusBlog(frontmatter: NoteFrontmatter): any {
   const docusaurusFrontmatter: any = {
@@ -15,7 +15,7 @@ export function transformToDocusaurusBlog(frontmatter: NoteFrontmatter): any {
   if (frontmatter.authors) {
     docusaurusFrontmatter.authors = frontmatter.authors;
   } else {
-    docusaurusFrontmatter.authors = ['default'];
+    docusaurusFrontmatter.authors = ["default"];
   }
 
   // Add description if available
@@ -33,14 +33,14 @@ export function transformToDocusaurusBlog(frontmatter: NoteFrontmatter): any {
     docusaurusFrontmatter.image = frontmatter.image;
   }
 
-  // Remove PKM-specific fields
+  // Remove Enkidu-specific fields
   // Don't include: category, type, publish, updated
 
   return docusaurusFrontmatter;
 }
 
 /**
- * Transform PKM frontmatter to Docusaurus docs format
+ * Transform Enkidu frontmatter to Docusaurus docs format
  */
 export function transformToDocusaurusDocs(frontmatter: NoteFrontmatter): any {
   const docusaurusFrontmatter: any = {
@@ -72,7 +72,7 @@ export function transformToDocusaurusDocs(frontmatter: NoteFrontmatter): any {
 export function formatDateForDocusaurus(dateString: string): string {
   try {
     const date = new Date(dateString);
-    return format(date, 'yyyy-MM-dd');
+    return format(date, "yyyy-MM-dd");
   } catch {
     return dateString;
   }

@@ -24,18 +24,18 @@ noteCommand
   .option("--blog", "Create as blog post")
   .action(async (title: string, options) => {
     try {
-      const pkmRoot = ConfigManager.findPkmRoot();
-      if (!pkmRoot) {
+      const enkiduRoot = ConfigManager.findEnkiduRoot();
+      if (!enkiduRoot) {
         throw ErrorHandler.notInitialized();
       }
 
       logger.debug("Creating note", { title, options });
 
       const configManager = getConfigManager();
-      await configManager.loadConfig(pkmRoot);
+      await configManager.loadConfig(enkiduRoot);
       const config = configManager.getConfig();
 
-      const noteManager = new NoteManager(pkmRoot);
+      const noteManager = new NoteManager(enkiduRoot);
       await noteManager.initialize();
 
       // Create note with spinner
@@ -72,18 +72,18 @@ noteCommand
   .argument("<slug>", "Note slug or path")
   .action(async (slug: string) => {
     try {
-      const pkmRoot = ConfigManager.findPkmRoot();
-      if (!pkmRoot) {
+      const enkiduRoot = ConfigManager.findEnkiduRoot();
+      if (!enkiduRoot) {
         throw ErrorHandler.notInitialized();
       }
 
       logger.debug("Editing note", { slug });
 
       const configManager = getConfigManager();
-      await configManager.loadConfig(pkmRoot);
+      await configManager.loadConfig(enkiduRoot);
       const config = configManager.getConfig();
 
-      const noteManager = new NoteManager(pkmRoot);
+      const noteManager = new NoteManager(enkiduRoot);
       await noteManager.initialize();
 
       // Read note with spinner
@@ -118,14 +118,14 @@ noteCommand
   .argument("<slug>", "Note slug or path")
   .action(async (slug: string) => {
     try {
-      const pkmRoot = ConfigManager.findPkmRoot();
-      if (!pkmRoot) {
+      const enkiduRoot = ConfigManager.findEnkiduRoot();
+      if (!enkiduRoot) {
         throw ErrorHandler.notInitialized();
       }
 
       logger.debug("Showing note details", { slug });
 
-      const noteManager = new NoteManager(pkmRoot);
+      const noteManager = new NoteManager(enkiduRoot);
       await noteManager.initialize();
 
       // Read note
@@ -189,14 +189,14 @@ noteCommand
   .option("--limit <number>", "Limit number of results", "20")
   .action(async (options) => {
     try {
-      const pkmRoot = ConfigManager.findPkmRoot();
-      if (!pkmRoot) {
+      const enkiduRoot = ConfigManager.findEnkiduRoot();
+      if (!enkiduRoot) {
         throw ErrorHandler.notInitialized();
       }
 
       logger.debug("Listing notes", { options });
 
-      const noteManager = new NoteManager(pkmRoot);
+      const noteManager = new NoteManager(enkiduRoot);
       await noteManager.initialize();
 
       // List notes with spinner
@@ -261,14 +261,14 @@ noteCommand
   .option("-y, --yes", "Skip confirmation")
   .action(async (slug: string, options) => {
     try {
-      const pkmRoot = ConfigManager.findPkmRoot();
-      if (!pkmRoot) {
+      const enkiduRoot = ConfigManager.findEnkiduRoot();
+      if (!enkiduRoot) {
         throw ErrorHandler.notInitialized();
       }
 
       logger.debug("Deleting note", { slug, skipConfirm: options.yes });
 
-      const noteManager = new NoteManager(pkmRoot);
+      const noteManager = new NoteManager(enkiduRoot);
       await noteManager.initialize();
 
       // Read note

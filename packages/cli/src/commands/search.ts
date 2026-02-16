@@ -24,17 +24,17 @@ export const searchCommand = new Command("search")
   .option("--rebuild-index", "Rebuild search index")
   .action(async (query: string, options) => {
     try {
-      const pkmRoot = ConfigManager.findPkmRoot();
-      if (!pkmRoot) {
+      const enkiduRoot = ConfigManager.findEnkiduRoot();
+      if (!enkiduRoot) {
         throw ErrorHandler.notInitialized();
       }
 
       logger.debug("Starting search", { query, options });
 
       const configManager = getConfigManager();
-      await configManager.loadConfig(pkmRoot);
+      await configManager.loadConfig(enkiduRoot);
 
-      const noteManager = new NoteManager(pkmRoot);
+      const noteManager = new NoteManager(enkiduRoot);
       await noteManager.initialize();
 
       // Validate query
@@ -79,7 +79,7 @@ export const searchCommand = new Command("search")
       }
 
       // Prepare cache path
-      const cachePath = join(pkmRoot, ".enkidu", "cache", "search.json");
+      const cachePath = join(enkiduRoot, ".enkidu", "cache", "search.json");
       const cacheManager = new SearchCacheManager();
       const indexer = new SearchIndexer();
 

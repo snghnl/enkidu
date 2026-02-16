@@ -12,11 +12,11 @@ import { parseFrontmatter } from "../note/frontmatter.js";
 export function convertWikiLinksToMarkdown(
   content: string,
   sourceFilePath: string,
-  pkmRoot: string,
+  enkiduRoot: string,
   options: LinkConversionOptions = {},
 ): string {
   return replaceWikiLinks(content, (link) => {
-    return convertSingleWikiLink(link, sourceFilePath, pkmRoot, options);
+    return convertSingleWikiLink(link, sourceFilePath, enkiduRoot, options);
   });
 }
 
@@ -46,7 +46,7 @@ export interface LinkConversionOptions {
 function convertSingleWikiLink(
   link: WikiLink,
   sourceFilePath: string,
-  pkmRoot: string,
+  enkiduRoot: string,
   options: LinkConversionOptions,
 ): string {
   const {
@@ -56,7 +56,7 @@ function convertSingleWikiLink(
   } = options;
 
   // Resolve the link
-  const resolved = resolveWikiLink(link.target, pkmRoot);
+  const resolved = resolveWikiLink(link.target, enkiduRoot);
 
   // Handle broken links
   if (!resolved.exists || !resolved.resolvedPath) {
@@ -79,7 +79,7 @@ function convertSingleWikiLink(
 
   if (useAbsolutePaths) {
     // Use absolute path from basePath
-    const relativeFromRoot = relative(pkmRoot, resolved.resolvedPath);
+    const relativeFromRoot = relative(enkiduRoot, resolved.resolvedPath);
     linkPath = join(basePath, relativeFromRoot).replace(/\\/g, "/");
   } else {
     // Use relative path from source file
@@ -122,7 +122,7 @@ function getNoteTitle(filePath: string): string {
 
 /**
  * Convert markdown links back to wiki-links
- * Useful for importing content back into PKM
+ * Useful for importing content back into Enkidu
  */
 export function convertMarkdownLinksToWiki(
   content: string,
@@ -185,13 +185,13 @@ export function extractAllLinks(content: string): {
  */
 export function validateLinks(
   content: string,
-  pkmRoot: string,
+  enkiduRoot: string,
 ): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
   const links = extractWikiLinks(content);
 
   for (const link of links) {
-    const resolved = resolveWikiLink(link.target, pkmRoot);
+    const resolved = resolveWikiLink(link.target, enkiduRoot);
 
     if (!resolved.exists) {
       const lineInfo = link.line ? ` (line ${link.line})` : "";
@@ -217,14 +217,14 @@ export function validateLinks(
 export function processSyncContent(
   content: string,
   sourceFilePath: string,
-  pkmRoot: string,
+  enkiduRoot: string,
   options: LinkConversionOptions = {},
 ): string {
   // Convert wiki-links to markdown links
   let processed = convertWikiLinksToMarkdown(
     content,
     sourceFilePath,
-    pkmRoot,
+    enkiduRoot,
     options,
   );
 

@@ -14,15 +14,18 @@ export function resolveTilde(path: string): string {
 /**
  * Resolve path relative to Enkidu root
  */
-export function resolvePkmPath(pkmRoot: string, ...paths: string[]): string {
-  return resolve(pkmRoot, ...paths);
+export function resolvePkmPath(enkiduRoot: string, ...paths: string[]): string {
+  return resolve(enkiduRoot, ...paths);
 }
 
 /**
  * Get relative path from Enkidu root
  */
-export function getRelativePath(pkmRoot: string, absolutePath: string): string {
-  return relative(pkmRoot, absolutePath);
+export function getRelativePath(
+  enkiduRoot: string,
+  absolutePath: string,
+): string {
+  return relative(enkiduRoot, absolutePath);
 }
 
 /**
