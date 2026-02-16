@@ -4,19 +4,22 @@ A powerful command-line interface for managing your personal knowledge, daily no
 
 ## Features
 
-✅ **Implemented (v1.0.0-alpha)**
+✅ **Implemented (v1.0.0)**
 - 📝 **Daily Notes** - Create and manage daily journal entries
 - 📚 **Note Management** - Full CRUD operations for notes with categories and tags
 - 🏷️ **Tags & Categories** - Organize and filter your knowledge
 - ⚙️ **Configuration** - Flexible configuration system
 - 📁 **File-based Storage** - All notes stored as markdown files
-- 🎨 **Templates** - Built-in templates for different note types
-- 🔗 **Wiki-style Linking** - Link notes together with `[[note-name]]` syntax
+- 🎨 **Templates** - Built-in templates with CLI management
+- 🔗 **Wiki-style Linking** - Link notes together with `[[note-name]]` syntax and backlinks
 - 📊 **Link Analysis** - Backlinks, broken link detection, and statistics
+- 🔍 **Full-text Search** - Fast fuzzy search with Fuse.js, cached indexing, and filtering
+- 📋 **Template Management** - List, validate, and manage templates via CLI
 
-🚧 **Coming Soon**
-- 🔍 **Full-text Search** - Fast fuzzy search across all notes
-- 🔄 **Docusaurus Sync** - One-command publishing to your blog (with link conversion)
+🚧 **Coming Next**
+- 🔄 **Docusaurus Sync** - One-command publishing to your blog with link conversion
+- 🧪 **Comprehensive Testing** - 85%+ test coverage across all features
+- ✨ **UX Polish** - Better error messages, progress indicators, and logging
 
 ## Installation
 
@@ -159,7 +162,57 @@ enkidu link stats
 - `[[2026-02-16]]` - Link to daily note
 - Case-insensitive matching with fuzzy suggestions
 
-### 7. Configuration
+### 7. Full-text Search
+
+Search across all your notes with fuzzy matching:
+
+```bash
+# Search all notes
+enkidu search "react hooks"
+
+# Filter by category
+enkidu search "javascript" --category reference
+
+# Filter by tags
+enkidu search "tutorial" --tag react --tag typescript
+
+# Limit results
+enkidu search "API" --limit 5
+
+# Rebuild search index
+enkidu search --rebuild-index
+```
+
+**Search Features:**
+- Fuzzy matching with Fuse.js
+- Searches across title, content, tags, and category
+- Weighted scoring (title > tags > category > content)
+- Cached indexing for fast searches
+- Auto-updates on note changes
+
+### 8. Template Management
+
+Manage and validate templates:
+
+```bash
+# List all available templates
+enkidu template list
+
+# Validate all templates
+enkidu template validate
+
+# Validate specific template
+enkidu template validate daily-default
+```
+
+**Built-in Templates:**
+- `daily-default` - Daily note structure
+- `note-default` - Basic note template
+- `blog-post` - Blog post format
+- `project` - Project tracking
+- `meeting` - Meeting notes
+
+### 9. Configuration
 
 ```bash
 # View all config
@@ -301,7 +354,7 @@ pnpm typecheck
 
 ## Roadmap
 
-### v1.0.0 (MVP)
+### v1.0.0 ✅ **COMPLETED**
 - [x] CLI infrastructure
 - [x] Configuration system
 - [x] Note CRUD operations
@@ -309,23 +362,33 @@ pnpm typecheck
 - [x] Tags and categories
 - [x] Wiki-style linking
 - [x] Link validation and backlinks
-- [ ] Search functionality
+- [x] Full-text search with fuzzy matching
+- [x] Template management CLI
+- [x] Search indexing and caching
+
+### v1.0.1 (Next - Quality & Polish)
+- [ ] Comprehensive test suite (85%+ coverage)
+- [ ] Error handling improvements
+- [ ] Progress indicators and spinners
+- [ ] Better user feedback and hints
+- [ ] Logging system
+- [ ] Performance optimization (lazy loading, parallel operations)
+- [ ] Complete documentation
+
+### v1.1.0 (Publishing & Sync)
 - [ ] Docusaurus sync with link conversion
-- [ ] Documentation
-- [ ] Tests (>80% coverage)
-
-### v1.1.0
+- [ ] Publishing workflow
 - [ ] Link graph visualization
-- [ ] Interactive search
-- [ ] Custom templates
-- [ ] Import/export
-- [ ] Git integration
+- [ ] Interactive search mode
+- [ ] Custom template support
+- [ ] Import/export functionality
 
-### v2.0.0
+### v2.0.0 (Future)
+- [ ] Git integration
 - [ ] Web UI
 - [ ] Mobile companion app
 - [ ] Cloud sync
-- [ ] AI features
+- [ ] AI-powered features (suggestions, summarization)
 
 ## Contributing
 
