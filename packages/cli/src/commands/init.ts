@@ -1,8 +1,12 @@
 import { Command } from "commander";
-import { getConfigManager } from "../core/config/manager.js";
-import inquirer from "inquirer";
+import chalk from "chalk";
 import { join } from "path";
 import { homedir } from "os";
+import { getConfigManager } from "../core/config/manager.js";
+import { ErrorHandler } from "../utils/errors.js";
+import { logger, initLogger } from "../utils/logger.js";
+import { ProgressIndicator } from "../utils/spinner.js";
+import { Prompts } from "../utils/prompts.js";
 
 export const initCommand = new Command("init")
   .description("Initialize Enkidu in the current or specified directory")
@@ -12,93 +16,127 @@ export const initCommand = new Command("init")
   )
   .action(async (options) => {
     try {
+      console.log();
+      console.log(chalk.bold.cyan("Welcome to Enkidu! 📚"));
+      console.log(chalk.gray("Personal Knowledge Management System"));
+      console.log();
+
       // Prompt for configuration
-      const answers = await inquirer.prompt([
-        {
-          type: "input",
-          name: "rootDir",
+      const rootDir =
+        options.dir ||
+        (await Prompts.input({
           message: "Where would you like to store your Enkidu notes?",
-          default: options.dir || join(homedir(), "enkidu"),
-        },
-        {
-          type: "input",
-          name: "editor",
-          message: "What editor would you like to use?",
-          default: process.env.EDITOR || "vim",
-        },
-        {
-          type: "input",
-          name: "syncTarget",
-          message: "Path to your Docusaurus blog directory (optional):",
-          default: "",
-        },
-      ]);
+          default: join(homedir(), "enkidu"),
+        }));
+
+      const editor = await Prompts.select({
+        message: "Select your preferred editor:",
+        choices: [
+          { name: "VS Code", value: "code" },
+          { name: "Vim", value: "vim" },
+          { name: "Neovim", value: "nvim" },
+          { name: "Nano", value: "nano" },
+          { name: "Emacs", value: "emacs" },
+          { name: "System default", value: "default" },
+        ],
+        default: "code",
+      });
+
+      const syncTarget = await Prompts.input({
+        message: "Path to your Docusaurus blog directory (optional):",
+        default: "",
+      });
 
       const manager = getConfigManager();
 
       // Check if already initialized
-      const isInitialized = await manager.loadConfig(answers.rootDir).then(
+      logger.debug("Checking if already initialized", { rootDir });
+      const isInitialized = await manager.loadConfig(rootDir).then(
         () => true,
         () => false,
       );
 
       if (isInitialized) {
-        const { overwrite } = await inquirer.prompt([
-          {
-            type: "confirm",
-            name: "overwrite",
-            message:
-              "Enkidu is already initialized in this directory. Overwrite?",
-            default: false,
-          },
-        ]);
+        const overwrite = await Prompts.confirm({
+          message:
+            "Enkidu is already initialized in this directory. Overwrite?",
+          default: false,
+          warning: true,
+        });
 
         if (!overwrite) {
-          console.log("Initialization cancelled.");
+          console.log(chalk.yellow("Initialization cancelled."));
           return;
         }
       }
 
+      // Initialize with progress indicator
+      const progress = new ProgressIndicator([
+        "Creating directory structure",
+        "Setting up configuration",
+        "Creating default templates",
+        "Initializing cache",
+      ]);
+
+      progress.start();
+
       // Initialize with user inputs
-      const config = await manager.initConfig(answers.rootDir, {
-        editor: answers.editor,
+      const config = await manager.initConfig(rootDir, {
+        editor: editor === "default" ? process.env.EDITOR || "vim" : editor,
         sync: {
-          target: answers.syncTarget,
-          enabled: Boolean(answers.syncTarget),
+          target: syncTarget,
+          enabled: Boolean(syncTarget),
           include: ["blog/**/*.md"],
           exclude: ["**/drafts/**"],
           publishField: "publish",
           transformFrontmatter: true,
           copyAssets: true,
-          assetsPath: answers.syncTarget
-            ? join(answers.syncTarget, "..", "static", "img")
-            : "",
+          assetsPath: syncTarget ? join(syncTarget, "..", "static", "img") : "",
         },
       });
 
-      console.log("\n✓ Enkidu initialized successfully!");
-      console.log(`\nDirectory: ${config.rootDir}`);
-      console.log("\nDirectory structure created:");
-      console.log("  📁 daily/          - Daily notes");
-      console.log("  📁 notes/          - General notes");
-      console.log("    📁 projects/     - Project notes");
-      console.log("    📁 reference/    - Reference materials");
-      console.log("    📁 ideas/        - Ideas and brainstorming");
-      console.log("    📁 misc/         - Miscellaneous");
-      console.log("  📁 blog/           - Blog posts (publishable)");
-      console.log("  📁 attachments/    - Images and files");
-      console.log("  📁 .enkidu/        - Configuration and cache");
-      console.log("\nNext steps:");
-      console.log("  1. Create your first daily note:  enkidu daily");
+      progress.nextStep();
+      progress.nextStep();
+      progress.nextStep();
+      progress.complete(chalk.green("✓ Enkidu initialized successfully!"));
+
+      // Initialize logger for this workspace
+      initLogger(config.rootDir);
+      logger.info("Enkidu initialized", { rootDir: config.rootDir });
+
+      // Display success message
+      console.log();
+      console.log(chalk.bold("Directory:"), chalk.cyan(config.rootDir));
+      console.log();
+      console.log(chalk.bold("Directory structure created:"));
+      console.log(chalk.gray("  📁 daily/          - Daily notes"));
+      console.log(chalk.gray("  📁 notes/          - General notes"));
+      console.log(chalk.gray("    📁 projects/     - Project notes"));
+      console.log(chalk.gray("    📁 reference/    - Reference materials"));
+      console.log(chalk.gray("    📁 ideas/        - Ideas and brainstorming"));
+      console.log(chalk.gray("    📁 misc/         - Miscellaneous"));
       console.log(
-        '  2. Create a new note:              enkidu note create "My First Note"',
+        chalk.gray("  📁 blog/           - Blog posts (publishable)"),
       );
-      console.log("  3. View configuration:             enkidu config list");
+      console.log(chalk.gray("  📁 attachments/    - Images and files"));
+      console.log(chalk.gray("  📁 .enkidu/        - Configuration and cache"));
+      console.log();
+      console.log(chalk.bold.cyan("Next steps:"));
+      console.log(
+        chalk.white("  1. Create your first daily note:"),
+        chalk.cyan("enkidu daily"),
+      );
+      console.log(
+        chalk.white("  2. Create a new note:           "),
+        chalk.cyan('enkidu note create "My First Note"'),
+      );
+      console.log(
+        chalk.white("  3. View configuration:          "),
+        chalk.cyan("enkidu config list"),
+      );
+      console.log();
     } catch (error) {
-      console.error(
-        "Error initializing Enkidu:",
-        error instanceof Error ? error.message : error,
-      );
-      process.exit(1);
+      logger.error("Failed to initialize Enkidu", error);
+      ErrorHandler.handle(error);
     }
   });

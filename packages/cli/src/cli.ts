@@ -11,6 +11,14 @@ import { syncCommand } from "./commands/sync.js";
 import { searchCommand } from "./commands/search.js";
 import { linkCommand } from "./commands/link.js";
 import { templateCommand } from "./commands/template.js";
+import { ConfigManager } from "./core/config/manager.js";
+import { initLogger } from "./utils/logger.js";
+
+// Initialize logger if we're in a workspace
+const pkmRoot = ConfigManager.findPkmRoot();
+if (pkmRoot) {
+  initLogger(pkmRoot);
+}
 
 const program = new Command();
 
