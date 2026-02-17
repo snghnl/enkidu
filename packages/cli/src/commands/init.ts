@@ -110,10 +110,6 @@ export const initCommand = new Command("init")
       console.log(chalk.bold("Directory structure created:"));
       console.log(chalk.gray("  📁 daily/          - Daily notes"));
       console.log(chalk.gray("  📁 notes/          - General notes"));
-      console.log(chalk.gray("    📁 projects/     - Project notes"));
-      console.log(chalk.gray("    📁 reference/    - Reference materials"));
-      console.log(chalk.gray("    📁 ideas/        - Ideas and brainstorming"));
-      console.log(chalk.gray("    📁 misc/         - Miscellaneous"));
       console.log(
         chalk.gray("  📁 blog/           - Blog posts (publishable)"),
       );

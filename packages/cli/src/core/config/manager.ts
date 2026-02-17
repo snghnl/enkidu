@@ -165,10 +165,7 @@ export class ConfigManager {
       join(rootDir, ".enkidu", "templates"),
       join(rootDir, ".enkidu", "cache"),
       join(rootDir, "daily"),
-      join(rootDir, "notes", "projects"),
-      join(rootDir, "notes", "reference"),
-      join(rootDir, "notes", "ideas"),
-      join(rootDir, "notes", "misc"),
+      join(rootDir, "notes"),
       join(rootDir, "blog"),
       join(rootDir, "attachments"),
     ];
