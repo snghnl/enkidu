@@ -35,7 +35,6 @@ export function detectEditor(configEditor?: string): string {
  */
 export async function openInEditor(
   filePath: string,
-  content?: string,
   editor?: string,
 ): Promise<void> {
   if (!fileExists(filePath)) {
@@ -43,7 +42,6 @@ export async function openInEditor(
   }
 
   const editorCmd = detectEditor(editor);
-  const contentArg = content ? content : "";
 
   try {
     await execa(editorCmd, [filePath], { stdio: "inherit" });
