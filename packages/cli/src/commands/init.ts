@@ -2,7 +2,7 @@ import { Command } from "commander";
 import chalk from "chalk";
 import { join } from "path";
 import { homedir } from "os";
-import { getConfigManager } from "../core/config/manager.js";
+import { getConfigManager, ConfigManager } from "../core/config/manager.js";
 import { ErrorHandler } from "../utils/errors.js";
 import { logger, initLogger } from "../utils/logger.js";
 import { ProgressIndicator } from "../utils/spinner.js";
@@ -53,10 +53,7 @@ export const initCommand = new Command("init")
 
       // Check if already initialized
       logger.debug("Checking if already initialized", { rootDir });
-      const isInitialized = await manager.loadConfig(rootDir).then(
-        () => true,
-        () => false,
-      );
+      const isInitialized = ConfigManager.isInitialized(rootDir);
 
       if (isInitialized) {
         const overwrite = await Prompts.confirm({
@@ -122,6 +119,9 @@ export const initCommand = new Command("init")
       );
       console.log(chalk.gray("  📁 attachments/    - Images and files"));
       console.log(chalk.gray("  📁 .enkidu/        - Configuration and cache"));
+      console.log(
+        chalk.gray("    📁 templates/    - Default templates copied"),
+      );
       console.log();
       console.log(chalk.bold.cyan("Next steps:"));
       console.log(
