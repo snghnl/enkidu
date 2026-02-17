@@ -33,6 +33,8 @@ export const initCommand = new Command("init")
         message: "Select your preferred editor:",
         choices: [
           { name: "VS Code", value: "code" },
+          { name: "Cursor", value: "cursor" },
+          { name: "Zed", value: "zed" },
           { name: "Vim", value: "vim" },
           { name: "Neovim", value: "nvim" },
           { name: "Nano", value: "nano" },

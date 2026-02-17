@@ -1,5 +1,5 @@
-import inquirer from 'inquirer';
-import chalk from 'chalk';
+import inquirer from "inquirer";
+import chalk from "chalk";
 
 /**
  * Confirmation prompt options
@@ -42,8 +42,8 @@ export class Prompts {
 
     const { confirmed } = await inquirer.prompt([
       {
-        type: 'confirm',
-        name: 'confirmed',
+        type: "confirm",
+        name: "confirmed",
         message,
         default: options.default ?? false,
       },
@@ -56,13 +56,34 @@ export class Prompts {
    * Ask user to select from a list
    */
   static async select<T = string>(options: SelectOptions): Promise<T> {
+    // If default is provided and choices contain objects with values,
+    // find the index of the choice with matching value
+    let defaultIndex: number | undefined = undefined;
+
+    if (options.default !== undefined && Array.isArray(options.choices)) {
+      const index = options.choices.findIndex((choice) => {
+        if (
+          typeof choice === "object" &&
+          choice !== null &&
+          "value" in choice
+        ) {
+          return choice.value === options.default;
+        }
+        return choice === options.default;
+      });
+
+      if (index !== -1) {
+        defaultIndex = index;
+      }
+    }
+
     const { selected } = await inquirer.prompt([
       {
-        type: 'list',
-        name: 'selected',
+        type: "list",
+        name: "selected",
         message: options.message,
         choices: options.choices,
-        default: options.default,
+        default: defaultIndex,
       },
     ]);
 
@@ -73,15 +94,19 @@ export class Prompts {
    * Ask user for text input
    */
   static async input(options: InputOptions): Promise<string> {
-    const { value } = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'value',
-        message: options.message,
-        default: options.default,
-        validate: options.validate,
-      },
-    ]);
+    const promptConfig: any = {
+      type: "input",
+      name: "value",
+      message: options.message,
+      default: options.default,
+    };
+
+    // Only add validate if it's provided
+    if (options.validate) {
+      promptConfig.validate = options.validate;
+    }
+
+    const { value } = await inquirer.prompt([promptConfig]);
 
     return value;
   }
@@ -92,8 +117,8 @@ export class Prompts {
   static async multiSelect<T = string>(options: SelectOptions): Promise<T[]> {
     const { selected } = await inquirer.prompt([
       {
-        type: 'checkbox',
-        name: 'selected',
+        type: "checkbox",
+        name: "selected",
         message: options.message,
         choices: options.choices,
       },
@@ -108,9 +133,9 @@ export class Prompts {
   static async confirmDestructive(
     action: string,
     target: string,
-    details?: string
+    details?: string,
   ): Promise<boolean> {
-    console.log(chalk.yellow('\n⚠  Destructive Action Warning'));
+    console.log(chalk.yellow("\n⚠  Destructive Action Warning"));
     console.log(chalk.white(`   Action: ${action}`));
     console.log(chalk.white(`   Target: ${target}`));
     if (details) {
@@ -128,20 +153,22 @@ export class Prompts {
   /**
    * Show a list and ask user to select one
    */
-  static async selectFromList<T extends { id: string; name: string; description?: string }>(
+  static async selectFromList<
+    T extends { id: string; name: string; description?: string },
+  >(
     items: T[],
     options: {
       message: string;
       emptyMessage?: string;
       formatItem?: (item: T) => string;
-    }
+    },
   ): Promise<T | null> {
     if (items.length === 0) {
-      console.log(chalk.yellow(options.emptyMessage ?? 'No items available.'));
+      console.log(chalk.yellow(options.emptyMessage ?? "No items available."));
       return null;
     }
 
-    const choices = items.map(item => ({
+    const choices = items.map((item) => ({
       name: options.formatItem ? options.formatItem(item) : item.name,
       value: item,
       short: item.name,
@@ -158,14 +185,14 @@ export class Prompts {
    */
   static async confirmWithVerification(
     message: string,
-    verificationWord: string
+    verificationWord: string,
   ): Promise<boolean> {
     console.log(chalk.yellow(`\n⚠  ${message}`));
     console.log(chalk.gray(`   Type "${verificationWord}" to confirm.`));
     console.log();
 
     const input = await this.input({
-      message: 'Type the verification word:',
+      message: "Type the verification word:",
       validate: (value) => {
         if (value !== verificationWord) {
           return `Please type "${verificationWord}" to confirm`;
@@ -185,11 +212,11 @@ export const prompts = {
   /**
    * Confirm deletion of a note
    */
-  async confirmDelete(itemName: string, itemType = 'note'): Promise<boolean> {
+  async confirmDelete(itemName: string, itemType = "note"): Promise<boolean> {
     return Prompts.confirmDestructive(
       `delete this ${itemType}`,
       itemName,
-      'This action cannot be undone.'
+      "This action cannot be undone.",
     );
   },
 
@@ -209,12 +236,12 @@ export const prompts = {
    */
   async selectTemplate(templates: string[]): Promise<string | null> {
     if (templates.length === 0) {
-      console.log(chalk.yellow('No templates available.'));
+      console.log(chalk.yellow("No templates available."));
       return null;
     }
 
     return Prompts.select({
-      message: 'Select a template:',
+      message: "Select a template:",
       choices: templates,
     });
   },
@@ -224,16 +251,16 @@ export const prompts = {
    */
   async selectEditor(): Promise<string> {
     return Prompts.select({
-      message: 'Select your preferred editor:',
+      message: "Select your preferred editor:",
       choices: [
-        { name: 'VS Code', value: 'code' },
-        { name: 'Vim', value: 'vim' },
-        { name: 'Neovim', value: 'nvim' },
-        { name: 'Nano', value: 'nano' },
-        { name: 'Emacs', value: 'emacs' },
-        { name: 'System default', value: 'default' },
+        { name: "VS Code", value: "code" },
+        { name: "Vim", value: "vim" },
+        { name: "Neovim", value: "nvim" },
+        { name: "Nano", value: "nano" },
+        { name: "Emacs", value: "emacs" },
+        { name: "System default", value: "default" },
       ],
-      default: 'code',
+      default: "code",
     });
   },
 
@@ -242,11 +269,11 @@ export const prompts = {
    */
   async askTitle(defaultTitle?: string): Promise<string> {
     return Prompts.input({
-      message: 'Note title:',
+      message: "Note title:",
       default: defaultTitle,
       validate: (value) => {
         if (!value || value.trim().length === 0) {
-          return 'Title cannot be empty';
+          return "Title cannot be empty";
         }
         return true;
       },
@@ -259,23 +286,23 @@ export const prompts = {
   async askCategory(categories: string[]): Promise<string> {
     const choices = [
       ...categories,
-      { name: chalk.gray('+ New category'), value: '__new__' },
+      { name: chalk.gray("+ New category"), value: "__new__" },
     ];
 
     const selected = await Prompts.select({
-      message: 'Select category:',
+      message: "Select category:",
       choices,
     });
 
-    if (selected === '__new__') {
+    if (selected === "__new__") {
       return Prompts.input({
-        message: 'Enter new category name:',
+        message: "Enter new category name:",
         validate: (value) => {
           if (!value || value.trim().length === 0) {
-            return 'Category cannot be empty';
+            return "Category cannot be empty";
           }
           if (!/^[a-z0-9-]+$/.test(value)) {
-            return 'Category must contain only lowercase letters, numbers, and hyphens';
+            return "Category must contain only lowercase letters, numbers, and hyphens";
           }
           return true;
         },
@@ -291,35 +318,35 @@ export const prompts = {
   async askTags(availableTags: string[] = []): Promise<string[]> {
     if (availableTags.length === 0) {
       const input = await Prompts.input({
-        message: 'Tags (comma-separated):',
-        default: '',
+        message: "Tags (comma-separated):",
+        default: "",
       });
       return input
-        .split(',')
-        .map(t => t.trim())
-        .filter(t => t.length > 0);
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0);
     }
 
     const choices = [
-      ...availableTags.map(tag => ({ name: tag, value: tag })),
-      { name: chalk.gray('+ Add new tags'), value: '__new__' },
+      ...availableTags.map((tag) => ({ name: tag, value: tag })),
+      { name: chalk.gray("+ Add new tags"), value: "__new__" },
     ];
 
     const selected = await Prompts.multiSelect<string>({
-      message: 'Select tags:',
+      message: "Select tags:",
       choices,
     });
 
-    if (selected.includes('__new__')) {
+    if (selected.includes("__new__")) {
       const newTags = await Prompts.input({
-        message: 'Enter new tags (comma-separated):',
-        default: '',
+        message: "Enter new tags (comma-separated):",
+        default: "",
       });
       const additional = newTags
-        .split(',')
-        .map(t => t.trim())
-        .filter(t => t.length > 0);
-      return [...selected.filter(t => t !== '__new__'), ...additional];
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0);
+      return [...selected.filter((t) => t !== "__new__"), ...additional];
     }
 
     return selected;
