@@ -1,8 +1,19 @@
 import { cosmiconfig } from "cosmiconfig";
-import { join } from "path";
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from "fs";
+import { join, dirname } from "path";
+import {
+  existsSync,
+  mkdirSync,
+  writeFileSync,
+  readFileSync,
+  copyFileSync,
+  readdirSync,
+} from "fs";
+import { fileURLToPath } from "url";
 import { EnkiduConfig, enkiduConfigSchema } from "./schema.js";
 import { getDefaultConfig } from "./defaults.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const CONFIG_NAME = "enkidu";
 
@@ -168,10 +179,46 @@ export class ConfigManager {
       }
     }
 
+    // Copy built-in templates to .enkidu/templates/
+    await this.copyBuiltInTemplates(rootDir);
+
     // Save config
     await this.saveConfig(join(rootDir, ".enkidu", "config.json"));
 
     return newConfig;
+  }
+
+  /**
+   * Copy built-in templates to user's .enkidu/templates directory
+   */
+  private async copyBuiltInTemplates(rootDir: string): Promise<void> {
+    const builtInTemplatesPath = join(__dirname, "../templates");
+    const customTemplatesPath = join(rootDir, ".enkidu", "templates");
+
+    // Ensure templates directory exists
+    if (!existsSync(customTemplatesPath)) {
+      mkdirSync(customTemplatesPath, { recursive: true });
+    }
+
+    // Check if built-in templates directory exists
+    if (!existsSync(builtInTemplatesPath)) {
+      return; // Skip if templates directory doesn't exist
+    }
+
+    // Copy all .md files from built-in templates
+    const templateFiles = readdirSync(builtInTemplatesPath).filter((file) =>
+      file.endsWith(".md"),
+    );
+
+    for (const file of templateFiles) {
+      const sourcePath = join(builtInTemplatesPath, file);
+      const destPath = join(customTemplatesPath, file);
+
+      // Only copy if destination doesn't exist (don't overwrite user templates)
+      if (!existsSync(destPath)) {
+        copyFileSync(sourcePath, destPath);
+      }
+    }
   }
 
   /**
@@ -198,6 +245,14 @@ export class ConfigManager {
     }
 
     return null;
+  }
+
+  /**
+   * Static helper to load configuration (convenience method)
+   */
+  static async load(searchFrom?: string): Promise<EnkiduConfig> {
+    const manager = getConfigManager();
+    return await manager.loadConfig(searchFrom);
   }
 }
 

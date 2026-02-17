@@ -21,6 +21,8 @@ import {
 } from "./frontmatter.js";
 import { validateNoteTitle } from "./validator.js";
 import { getConfigManager } from "../config/manager.js";
+import { TemplateLoader } from "../template/loader.js";
+import { renderTemplate } from "../template/engine.js";
 
 export class NoteManager {
   private config: any;
@@ -365,56 +367,58 @@ export class NoteManager {
       return { note, created: false };
     }
 
-    // Create daily note
-    const dayNames = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    const monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
+    // Load and render template
+    const loader = new TemplateLoader(this.enkiduRoot);
+    let templateContent: string;
 
-    const dayName = dayNames[date.getDay()];
-    const monthName = monthNames[date.getMonth()];
+    try {
+      const dailyTemplate = getConfigManager().getConfigValue("daily.template");
 
-    const frontmatter = {
-      date: date.toISOString(),
-      tags: ["daily"],
-      type: "daily" as const,
-      title: `${dayName}, ${monthName} ${day}, ${year}`,
-      created: date.toISOString(),
-      updated: date.toISOString(),
-      category: "daily",
-      publish: false,
-    };
+      const template = await loader.loadTemplate(dailyTemplate);
 
-    const content = `# ${dayName}, ${monthName} ${day}, ${year}\n\n## 🎯 Focus\n- \n\n## 📝 Notes\n\n\n## ✅ Done\n\n\n## 💭 Reflections\n\n\n## 🔗 Links\n- \n`;
+      templateContent = renderTemplate(template.content, {
+        title: `${year}-${month}-${day}`,
+        date: date.toISOString(),
+        slug: `${year}-${month}-${day}`,
+      });
+    } catch (error) {
+      // Fallback to hardcoded template if daily-default not found
+      templateContent = `---
+date: ${date.toISOString()}
+tags: [daily]
+type: daily
+---
 
-    const noteContent = stringifyFrontmatter(frontmatter, content);
-    writeFile(dailyPath, noteContent);
+# ${year}-${month}-${day}
+
+## 🎯 Focus
+-
+
+## 📝 Notes
+
+
+## ✅ Done
+
+
+## 💭 Reflections
+
+
+## 🔗 Links
+-
+`;
+    }
+
+    writeFile(dailyPath, templateContent);
+
+    // Parse the written content to get frontmatter and content
+    const { frontmatter, content } = parseFrontmatter(templateContent);
 
     const note: Note = {
       slug: `${year}-${month}-${day}`,
       filePath: dailyPath,
       frontmatter,
       content,
-      rawContent: noteContent,
+      rawContent: templateContent,
     };
 
     return { note, created: true };
