@@ -1,11 +1,15 @@
 <!-- Daily note with Focus, Notes, Done, Reflections -->
 ---
-date: {{date}}
+title: {{title}}
+created: {{date}}
+updated: {{date}}
 tags: [daily]
-type: daily
+category: daily
+type: note
+publish: false
 ---
 
-# {{dayName}}, {{monthName}} {{day}}, {{year}}
+# {{title}}
 
 ## 🎯 Focus
 - 
@@ -20,4 +24,4 @@ type: daily
 
 
 ## 🔗 Links
-- 
+-

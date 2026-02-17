@@ -4,7 +4,7 @@ title: {{title}}
 created: {{date}}
 updated: {{date}}
 tags: []
-category: misc
+category:
 type: note
 publish: false
 ---
@@ -14,4 +14,4 @@ publish: false
 Content goes here...
 
 ## Related
-- 
+-
