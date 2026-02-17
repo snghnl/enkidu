@@ -1,5 +1,13 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync, readdirSync, statSync } from 'fs';
-import { join, dirname } from 'path';
+import {
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  mkdirSync,
+  unlinkSync,
+  readdirSync,
+  statSync,
+} from "fs";
+import { join, dirname } from "path";
 
 /**
  * Read file contents as string
@@ -8,7 +16,7 @@ export function readFile(path: string): string {
   if (!existsSync(path)) {
     throw new Error(`File not found: ${path}`);
   }
-  return readFileSync(path, 'utf-8');
+  return readFileSync(path, "utf-8");
 }
 
 /**
@@ -19,7 +27,7 @@ export function writeFile(path: string, content: string): void {
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true });
   }
-  writeFileSync(path, content, 'utf-8');
+  writeFileSync(path, content, "utf-8");
 }
 
 /**

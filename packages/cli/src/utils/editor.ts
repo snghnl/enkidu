@@ -1,5 +1,6 @@
-import { execa } from 'execa';
-import { fileExists } from './fs.js';
+import { execa } from "execa";
+import { fileExists } from "./fs.js";
+import { mkdir } from "node:fs/promises";
 
 /**
  * Detect editor from config or environment
@@ -15,7 +16,7 @@ export function detectEditor(configEditor?: string): string {
   }
 
   // Common fallbacks
-  const fallbacks = ['vim', 'vi', 'nano', 'code', 'emacs'];
+  const fallbacks = ["vim", "vi", "nano", "code", "emacs"];
 
   for (const editor of fallbacks) {
     try {
@@ -26,29 +27,39 @@ export function detectEditor(configEditor?: string): string {
     }
   }
 
-  return 'vi'; // Last resort
+  return "vi"; // Last resort
 }
 
 /**
  * Open file in editor
  */
-export async function openInEditor(filePath: string, editor?: string): Promise<void> {
+export async function openInEditor(
+  filePath: string,
+  content?: string,
+  editor?: string,
+): Promise<void> {
   if (!fileExists(filePath)) {
     throw new Error(`File not found: ${filePath}`);
   }
 
   const editorCmd = detectEditor(editor);
+  const contentArg = content ? content : "";
 
   try {
-    await execa(editorCmd, [filePath], { stdio: 'inherit' });
+    await execa(editorCmd, [filePath], { stdio: "inherit" });
   } catch (error) {
-    throw new Error(`Failed to open editor: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to open editor: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
   }
 }
 
 /**
  * Open file in editor and wait for it to close
  */
-export async function editFile(filePath: string, editor?: string): Promise<void> {
+export async function editFile(
+  filePath: string,
+  editor?: string,
+): Promise<void> {
   await openInEditor(filePath, editor);
 }
