@@ -9,6 +9,7 @@ export function getDefaultConfig(rootDir?: string): EnkiduConfig {
     version: "0.1.0",
     rootDir: enkiduRoot,
     editor: process.env.EDITOR || "vim",
+    timezone: "",
     daily: {
       path: "daily",
       template: "daily-default",

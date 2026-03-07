@@ -38,16 +38,42 @@ export function extractTemplateVariables(template: string): string[] {
 /**
  * Get default template variables
  */
-export function getDefaultVariables(title: string): TemplateVariables {
+export function getDefaultVariables(
+  title: string,
+  timezone?: string,
+): TemplateVariables {
   const now = new Date();
+  const tz =
+    timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: tz,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(now);
+
+  const get = (type: string) =>
+    parts.find((p) => p.type === type)?.value ?? "";
+
+  const year = get("year");
+  const month = get("month");
+  const day = get("day");
+  const hour = get("hour");
+  const minute = get("minute");
+  const second = get("second");
 
   return {
     title,
-    date: now.toISOString(),
+    date: `${year}-${month}-${day}T${hour}:${minute}:${second}`,
     slug: title.toLowerCase().replace(/\s+/g, "-"),
-    year: now.getFullYear().toString(),
-    month: String(now.getMonth() + 1).padStart(2, "0"),
-    day: String(now.getDate()).padStart(2, "0"),
-    time: now.toLocaleTimeString(),
+    year,
+    month,
+    day,
+    time: `${hour}:${minute}`,
   };
 }

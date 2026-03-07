@@ -347,10 +347,29 @@ export class NoteManager {
    * Get or create daily note for a specific date
    */
   async getDailyNote(date: Date): Promise<{ note: Note; created: boolean }> {
-    // Format date according to config
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
+    // Format date parts using configured timezone
+    const tz =
+      this.config.timezone ||
+      Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: tz,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    }).formatToParts(date);
+    const get = (type: string) =>
+      parts.find((p) => p.type === type)?.value ?? "";
+    const year = get("year");
+    const month = get("month");
+    const day = get("day");
+    const hour = get("hour");
+    const minute = get("minute");
+    const second = get("second");
+    const localDateStr = `${year}-${month}-${day}T${hour}:${minute}:${second}`;
 
     // Build path: daily/YYYY/MM/DD.md
     const dailyPath = join(
@@ -378,13 +397,13 @@ export class NoteManager {
 
       templateContent = renderTemplate(template.content, {
         title: `${year}-${month}-${day}`,
-        date: date.toISOString(),
+        date: localDateStr,
         slug: `${year}-${month}-${day}`,
       });
     } catch (error) {
       // Fallback to hardcoded template if daily-default not found
       templateContent = `---
-date: ${date.toISOString()}
+date: ${localDateStr}
 tags: [daily]
 type: daily
 ---

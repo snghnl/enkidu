@@ -40,6 +40,7 @@ export const enkiduConfigSchema = z.object({
   version: z.string().default("0.1.0"),
   rootDir: z.string(),
   editor: z.string().default(""),
+  timezone: z.string().default(""),
   daily: dailyConfigSchema,
   notes: notesConfigSchema,
   sync: syncConfigSchema,
