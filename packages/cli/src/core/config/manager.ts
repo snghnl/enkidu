@@ -189,7 +189,7 @@ export class ConfigManager {
    * Copy built-in templates to user's .enkidu/templates directory
    */
   private async copyBuiltInTemplates(rootDir: string): Promise<void> {
-    const builtInTemplatesPath = join(__dirname, "../templates");
+    const builtInTemplatesPath = join(__dirname, "../../templates");
     const customTemplatesPath = join(rootDir, ".enkidu", "templates");
 
     // Ensure templates directory exists

@@ -17,7 +17,7 @@ export class TemplateLoader {
 
   constructor(enkiduRoot: string) {
     // Built-in templates are in the package (dist/ -> templates/)
-    this.builtInTemplatesPath = join(__dirname, "../templates");
+    this.builtInTemplatesPath = join(__dirname, "../../templates");
     // Custom templates are in .enkidu/templates
     this.customTemplatesPath = join(enkiduRoot, ".enkidu", "templates");
   }
