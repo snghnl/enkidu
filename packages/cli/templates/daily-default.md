@@ -5,7 +5,7 @@ created: {{date}}
 updated: {{date}}
 tags: [daily]
 category: daily
-type: note
+type: daily
 publish: false
 ---
 
